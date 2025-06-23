@@ -32,7 +32,6 @@ const showToast = async (message: string, configButtons?: any) => {
 
 const copyToClipboard = async (value: string, text?: string) => {
   const { Clipboard } = Plugins;
-
   await Clipboard.write({
     string: value,
   }).then(() => {

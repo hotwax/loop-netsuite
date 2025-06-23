@@ -5,10 +5,8 @@
         <ion-card>
         <form class="login-container" @keyup.enter="login(form)" @submit.prevent="login(form)">
           <Logo />
-          
           <ion-item lines="full" v-if="!baseURL">
             <ion-input label-placement="fixed" :label="($t('OMS'))" name="instanceUrl" v-model="instanceUrl" id="instanceUrl" type="text" required />
-
           </ion-item>
           <ion-item lines="full">
             <ion-input label-placement="fixed" :label="($t('Email'))" name="username" v-model="username" id="email" type="text" required />
@@ -36,7 +34,6 @@ import {
   IonInput,
   IonItem,
   IonPage,
-  
   IonCard
 } from "@ionic/vue";
 import { defineComponent } from "vue";
@@ -54,7 +51,6 @@ export default defineComponent({
     IonInput,
     IonItem,
     IonPage,
-    
     Logo,
     IonCard
   },

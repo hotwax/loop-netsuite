@@ -3,21 +3,23 @@
     <ion-content class="ion-padding">
       <div class="auth-container">
         <ion-card>
-        <form class="forgetPassword-container" @keyup.enter="forgetPassword(form)" @submit.prevent="forgetPassword(form)">
-        <Logo />
-        <ion-card-header class="ion-text-center">
-         <ion-card-title>Reset Password</ion-card-title>
-         <ion-card-subtitle>Enter your email and we'll send you a link to reset your password.</ion-card-subtitle>
-        </ion-card-header>
-         <ion-item>
-        <ion-input :label="$t('Email')" label-placement="fixed" v-model="forgetPasswordData.emailAddress" type="email"></ion-input>
-        </ion-item>
-        <div class="ion-padding">
-            <ion-button type="submit" color="primary"  expand="block">{{$t("forgetPassword") }}</ion-button>
-            <ion-button @click="navigate('/login')" fill="clear" expand="block">{{$t("Back to Login") }}</ion-button>
-        </div>
-    </form>
-    </ion-card>
+          <form class="forgetPassword-container" @keyup.enter="forgetPassword(form)"
+            @submit.prevent="forgetPassword(form)">
+            <Logo />
+            <ion-card-header class="ion-text-center">
+              <ion-card-title>Reset Password</ion-card-title>
+              <ion-card-subtitle>Enter your email and we'll send you a link to reset your password.</ion-card-subtitle>
+            </ion-card-header>
+            <ion-item>
+              <ion-input :label="$t('Email')" label-placement="fixed" v-model="forgetPasswordData.emailAddress"
+                type="email"></ion-input>
+            </ion-item>
+            <div class="ion-padding">
+              <ion-button type="submit" color="primary" expand="block">{{ $t("forgetPassword") }}</ion-button>
+              <ion-button @click="navigate('/login')" fill="clear" expand="block">{{ $t("Back to Login") }}</ion-button>
+            </div>
+          </form>
+        </ion-card>
       </div>
     </ion-content>
   </ion-page>
@@ -31,7 +33,7 @@ import { mapGetters } from 'vuex';
 import Logo from '@/components/Logo.vue';
 import logger from '@/logger';
 import { showToast, isValidEmail, isValidPassword } from '@/utils'
-import { 
+import {
   IonButton,
   IonContent,
   IonInput,
@@ -46,65 +48,53 @@ import {
 export default defineComponent({
   name: "ForgetPassword",
   components: {
-  IonButton,
-  IonContent,
-  IonInput,
-  IonItem,
-  IonPage,
-  IonCard,
-  Logo,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle
+    IonButton,
+    IonContent,
+    IonInput,
+    IonItem,
+    IonPage,
+    IonCard,
+    Logo,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle
   },
   data() {
     return {
-        forgetPasswordData: {
-          emailAddress: '',
-        }
+      forgetPasswordData: {
+        emailAddress: '',
+      }
     };
   },
   computed: {
     ...mapGetters({
     })
   },
-  
   methods: {
-    validateCreateUserDetail (forgetPasswordData: any) {
+    validateCreateUserDetail(forgetPasswordData: any) {
       const validationErrors = [];
-        if (!forgetPasswordData.emailAddress) {
-          validationErrors.push(('Email address is required.'));
-        }
-        if (forgetPasswordData.emailAddress && !isValidEmail(forgetPasswordData.emailAddress)) {
-         validationErrors.push(('Invalid email address.'));
-        }
-        return validationErrors; 
+      if(!forgetPasswordData.emailAddress) {
+        validationErrors.push(('Email address is required.'));
+      }
+      if(forgetPasswordData.emailAddress && !isValidEmail(forgetPasswordData.emailAddress)) {
+        validationErrors.push(('Invalid email address.'));
+      }
+      return validationErrors;
     },
     forgetPassword(form: any) {
-       try {
-        const validationErrors = this.validateCreateUserDetail({...this.forgetPasswordData});
-        if (validationErrors.length > 0) {
+      try {
+        const validationErrors = this.validateCreateUserDetail({ ...this.forgetPasswordData });
+        if(validationErrors.length > 0) {
           const errorMessages = validationErrors.join(" ");
           logger.error(errorMessages);
           showToast((errorMessages));
           return;
         }
-
         const payload = {
           ...this.forgetPasswordData,
-          
-        }
-        console.log('payload--', payload);
 
-        // const resp = await UserService.createUser(payload);
-        // if (resp.status === 200 && !hasError(resp) && resp.data.partyId) {
-        //   const partyId = resp.data.partyId;
-        //   showToast($t("User created successfully"));
-        //   this.$router.replace({ path: `/user-confirmation/${partyId}` })
-        // } else {
-        //   throw resp.data;
-        // }
-      } catch (err:any) {
+        }
+      } catch (err: any) {
         let errorMessage = ('Failed to create user.');
         if (err?.response?.data?.error?.message) {
           errorMessage = err.response.data.error.message
@@ -117,17 +107,14 @@ export default defineComponent({
       this.router.push({ path: route });
     }
   },
-  
-   setup() {
+  setup() {
     const router = useRouter();
     const store = useStore();
     return { router, store };
   }
 });
 
-
 </script>
-
 <style scoped>
 .auth-container {
   max-width: 400px;

@@ -4,24 +4,20 @@ import RootState from '@/store/RootState'
 import UserState from './UserState'
 import * as types from './mutation-types'
 import { showToast } from '@/utils'
-import i18n  from '@/i18n'
-import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
-
+import i18n from '@/i18n'
+import { updateToken } from '@/adapter'
 import logger from '@/logger'
 
 const actions: ActionTree<UserState, RootState> = {
-
   /**
  * Login user and return api key
  */
-
   async login({ commit, dispatch }, { username, password }) {
-
     const translate = (key: string) => i18n.global.t(key)
     try {
       const resp = await UserService.login(username, password)
-      if (resp.status === 200 && resp.data) {
-        if (resp.data.api_key) {
+      if(resp.status === 200 && resp.data) {
+        if(resp.data.api_key) {
           commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.api_key })
           updateToken(resp.data.api_key)
           await dispatch('getProfile')
@@ -54,8 +50,6 @@ const actions: ActionTree<UserState, RootState> = {
       logger.error('Failed to fetch user profile information', err)
     }
   }
-
-
 }
 
 export default actions;
