@@ -60,7 +60,7 @@ onMounted(() => {
   instanceUrl.value = currentInstanceUrl.value;
 });
 
-const login = async () => {
+async function login() {
   const trimmedInstanceUrl = instanceUrl.value.trim().toLowerCase();
   if (!baseURL) {
     const resolvedUrl = alias[trimmedInstanceUrl] || trimmedInstanceUrl;

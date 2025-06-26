@@ -31,8 +31,7 @@ import { useStore } from '@/store';
 import logger from '@/logger';
 import { translate } from '@/i18n';
 import { showToast, isValidEmail } from '@/utils';
-
-// Ionic components
+import Logo from '@/components/Logo.vue';
 import {
   IonButton,
   IonCard,
@@ -45,8 +44,6 @@ import {
   IonPage
 } from "@ionic/vue";
 
-import Logo from '@/components/Logo.vue';
-
 const router = useRouter();
 const store = useStore();
 
@@ -54,7 +51,7 @@ const forgetPasswordData = ref({
   emailAddress: '',
 });
 
-const validateCreateUserDetail = () => {
+function validateCreateUserDetail() {
   const validationErrors: string[] = [];
   if (!forgetPasswordData.value.emailAddress) {
     validationErrors.push(translate('Email address is required.'));
@@ -70,7 +67,7 @@ const validateCreateUserDetail = () => {
 };
 
 //  TODO: forgetPassword function is not functional yet, need to implement the API call
-const forgetPassword = async () => {
+async function forgetPassword() {
   try {
     const validationErrors = validateCreateUserDetail();
     if (validationErrors.length > 0) {

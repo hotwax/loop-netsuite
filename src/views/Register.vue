@@ -46,7 +46,6 @@ import { translate } from '@/i18n';
 import { showToast, isValidEmail, isValidPassword } from '@/utils';
 import logger from '@/logger';
 import Logo from '@/components/Logo.vue';
-
 import {
   IonButton,
   IonCard,
@@ -67,7 +66,7 @@ const registerData = ref({
   confirmPassword: ''
 });
 
-const validateCreateUserDetail = () => {
+function validateCreateUserDetail() {
   const validationErrors: string[] = [];
 
   if (!registerData.value.fullName) {
@@ -99,7 +98,7 @@ const validateCreateUserDetail = () => {
   return validationErrors;
 };
 // TODO: userRegister function is not functional yet, need to implement the API call
-const userRegister = async () => {
+async function userRegister() {
   try {
     const validationErrors = validateCreateUserDetail();
 
@@ -117,8 +116,6 @@ const userRegister = async () => {
     const response = await store.dispatch('user/register', payload);
     showToast(translate('User created successfully'));
     router.push('/login');
-
-    logger.info('Payload:', payload);
 
   } catch (err: any) {
     let errorMessage = 'Failed to create user.';
