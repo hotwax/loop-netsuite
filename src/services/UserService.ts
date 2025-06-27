@@ -41,7 +41,7 @@ const createUser = async (payload: any): Promise <any> => {
   });
 }
 
-const resgisterUser = async (payload: any): Promise<any> => {
+const registerUser = async (payload: any): Promise<any> => {
   return api({
     url: "services/user/registerUser",
     method: "post",
@@ -54,5 +54,5 @@ export const UserService = {
   getProfile,
   checkPermission,
   createUser,
-  resgisterUser
+  registerUser
 }

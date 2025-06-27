@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import Register from '@/views/Register.vue';
-import forgetPassword from '@/views/forgetPassword.vue';
+import ForgetPassword from '@/views/ForgetPassword.vue';
 import Login from '@/views/Login.vue'
 import store from '@/store'
 import Home from '@/views/Home.vue';
@@ -46,9 +46,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Register
   },
   {
-    path: '/forgotPassword',
-    name: 'ForgotPassword',
-    component: forgetPassword
+    path: '/forgetPassword',
+    name: 'ForgetPassword',
+    component: ForgetPassword
   },
 ]
 

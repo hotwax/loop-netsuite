@@ -366,6 +366,12 @@ img {
   text-align: center;
 }
 
+.auth-container {
+  max-width: 400px;
+  margin: auto;
+  padding-top: 100px;
+}
+
 @media (min-width: 991px) {
   /* shipment card desktop layout start */
   .results {

@@ -3,159 +3,131 @@
     <ion-content class="ion-padding">
       <div class="auth-container">
         <ion-card>
-          <form class="register-container" @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
+          <form @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
             <Logo />
             <ion-item>
-              <ion-input label-placement="floating" v-model="registerData.fullName">
-                <div slot="label">{{ $t('Full name') }} <ion-text color="danger">*</ion-text></div>
+              <ion-input label-placement="floating" :label="translate('Full name')" v-model="registerData.fullName">
+                 <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>
 
             <ion-item>
-              <ion-input label-placement="floating" v-model="registerData.emailAddress" type="email">
-                <div slot="label">{{ $t('Email Address') }} <ion-text color="danger">*</ion-text></div>
-
+              <ion-input label-placement="floating" :label="translate('Email Address')" v-model="registerData.emailAddress" type="email">
+                <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>
 
             <ion-item>
-              <ion-input label-placement="floating" :label="$t('Password')" name="password"
+              <ion-input label-placement="floating" :label="translate('Password')" name="password"
                 v-model="registerData.password" id="password" type="password" required />
             </ion-item>
 
             <ion-item>
-              <ion-input label-placement="floating" :label="$t('Confirm Password')" name="password"
-                v-model="registerData.ConfirmPassword" id="password" type="password" required />
+              <ion-input label-placement="floating" :label="translate('Confirm Password')" name="password"
+                v-model="registerData.confirmPassword" id="password" type="password" required />
             </ion-item>
 
             <div class="ion-padding">
-              <ion-button type="submit" expand="block">{{ $t("register") }}</ion-button>
-              <ion-button @click="navigate('/login')" fill="clear" expand="block">{{ $t("Back to Login") }}</ion-button>
+              <ion-button type="submit" expand="block">{{ translate("Register") }}</ion-button>
+              <ion-button @click="router.push('/login')" fill="clear" expand="block">{{ translate("Back to Login") }}</ion-button>
             </div>
           </form>
         </ion-card>
-
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from "@/store";
-import { defineComponent } from "vue";
-import { mapGetters } from 'vuex';
-import Logo from '@/components/Logo.vue';
-import { showToast, isValidEmail, isValidPassword } from '@/utils'
+import { useStore } from '@/store';
+import { translate } from '@/i18n';
+import { showToast, isValidEmail, isValidPassword } from '@/utils';
 import logger from '@/logger';
+import Logo from '@/components/Logo.vue';
+
 import {
   IonButton,
+  IonCard,
   IonContent,
   IonInput,
   IonItem,
   IonPage,
-  IonText,
-  IonCard
-} from "@ionic/vue";
+  IonText
+} from '@ionic/vue';
 
-export default defineComponent({
-  name: "Register",
-  components: {
-    IonButton,
-    IonContent,
-    IonInput,
-    IonItem,
-    IonPage,
-    IonText,
-    Logo,
-    IonCard
-  },
-  data() {
-    return {
-      registerData: {
-        fullName: '',
-        emailAddress: '',
-        password: '',
-        ConfirmPassword: ''
-      }
-    };
-  },
-  computed: {
-    ...mapGetters({
-    })
-  },
+const router = useRouter();
+const store = useStore();
 
-  methods: {
-    validateCreateUserDetail(registerData: any) {
-      const validationErrors = [];
-      if(!registerData.fullName) {
-        validationErrors.push(('Name is required.'));
-      }
-      if(!registerData.emailAddress) {
-        validationErrors.push(('Email address is required.'));
-      }
-      if(registerData.emailAddress && !isValidEmail(registerData.emailAddress)) {
-        validationErrors.push(('Invalid email address.'));
-      }
-      if(registerData.password && !isValidPassword(registerData.password)) {
-        validationErrors.push(('Password is not valid'));
-      }
-      if(registerData.password && registerData.confirmPassword && registerData.password !== registerData.confirmPassword) {
-        validationErrors.push(('Password is not matching with confirm password.'));
-      }
-      return validationErrors;
-    },
-    async userRegister() {
-      try {
-        const validationErrors = this.validateCreateUserDetail({ ...this.registerData });
-        if(validationErrors.length > 0) {
-          const errorMessages = validationErrors.join(" ");
-          logger.error(errorMessages);
-          showToast((errorMessages));
-          return;
-        }
-        const payload = {
-          ...this.registerData,
-
-        }
-        // const resp = await UserService.createUser(payload);
-        // if (resp.status === 200 && !hasError(resp) && resp.data.partyId) {
-        //   const partyId = resp.data.partyId;
-        //   showToast($t("User created successfully"));
-        //   this.$router.replace({ path: `/user-confirmation/${partyId}` })
-        // } else {
-        //   throw resp.data;
-        // }
-      } catch (err: any) {
-        let errorMessage = ('Failed to create user.');
-        if(err?.response?.data?.error?.message) {
-          errorMessage = err.response.data.error.message
-        }
-        logger.error('error', err)
-        showToast(errorMessage);
-      }
-    },
-    register(form: any) {
-      if(this.registerData.password !== this.registerData.ConfirmPassword) {
-        showToast("Passwords do not match");
-        return;
-      }
-    },
-    navigate: function (route: string) {
-      this.router.push({ path: route });
-    }
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    return { router, store };
-  }
+const registerData = ref({
+  fullName: '',
+  emailAddress: '',
+  password: '',
+  confirmPassword: ''
 });
+
+const validateCreateUserDetail = () => {
+  const validationErrors: string[] = [];
+
+  if (!registerData.value.fullName) {
+    validationErrors.push(translate('Name is required.'));
+  }
+  if (!registerData.value.emailAddress) {
+    validationErrors.push(translate('Email address is required.'));
+  }
+  if (
+    registerData.value.emailAddress &&
+    !isValidEmail(registerData.value.emailAddress)
+  ) {
+    validationErrors.push(translate('Invalid email address.'));
+  }
+  if (
+    registerData.value.password &&
+    !isValidPassword(registerData.value.password)
+  ) {
+    validationErrors.push(translate('Password is not valid'));
+  }
+  if (
+    registerData.value.password &&
+    registerData.value.confirmPassword &&
+    registerData.value.password !== registerData.value.confirmPassword
+  ) {
+    validationErrors.push(translate('Password is not matching with confirm password.'));
+  }
+
+  return validationErrors;
+};
+// TODO: userRegister function is not functional yet, need to implement the API call
+const userRegister = async () => {
+  try {
+    const validationErrors = validateCreateUserDetail();
+
+    if (validationErrors.length > 0) {
+      const errorMessages = validationErrors.join(' ');
+      logger.error(translate(errorMessages));
+      showToast(translate(errorMessages));
+      return;
+    }
+
+    const payload = {
+      ...registerData.value
+    };
+
+    const response = await store.dispatch('user/register', payload);
+    showToast(translate('User created successfully'));
+    router.push('/login');
+
+    logger.info('Payload:', payload);
+
+  } catch (err: any) {
+    let errorMessage = 'Failed to create user.';
+    if (err?.response?.data?.error?.message) {
+      errorMessage = err.response.data.error.message;
+    }
+    logger.error('error', err);
+    showToast(translate(errorMessage));
+  }
+};
+
 </script>
-<style scoped>
-.auth-container {
-  max-width: 400px;
-  margin: auto;
-  padding-top: 100px;
-}
-</style>
