@@ -60,7 +60,7 @@ onMounted(() => {
 
 async function login() {
   const trimmedInstanceUrl = instanceUrl.value.trim().toLowerCase();
-  if (!baseURL) {
+  if(!baseURL) {
     const resolvedUrl = alias[trimmedInstanceUrl] || trimmedInstanceUrl;
     store.dispatch("user/setUserInstanceUrl", resolvedUrl);
   }
@@ -71,7 +71,7 @@ async function login() {
       password: password.value,
     });
 
-    if (response.api_key) {
+    if(response.api_key) {
       username.value = "";
       password.value = "";
       router.push("/home");

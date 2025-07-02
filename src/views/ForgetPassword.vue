@@ -64,7 +64,7 @@ function validateCreateUserDetail() {
 async function forgetPassword() {
   try {
     const validationErrors = validateCreateUserDetail();
-    if (validationErrors.length > 0) {
+    if(validationErrors.length > 0) {
       const errorMessages = validationErrors.join(" ");
       logger.error(errorMessages);
       showToast(errorMessages);
@@ -75,7 +75,7 @@ async function forgetPassword() {
     showToast(translate("Reset link sent to your email."));
   } catch (err: any) {
     let errorMessage = "Failed to create user."
-    if (err?.response?.data?.error?.message) {
+    if(err?.response?.data?.error?.message) {
       errorMessage = err.response.data.error.message;
     }
     logger.error("error", err);

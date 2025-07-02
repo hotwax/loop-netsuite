@@ -10,23 +10,19 @@
                  <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>
-
             <ion-item>
               <ion-input label-placement="floating" :label="translate('Email Address')" v-model="registerData.emailAddress" type="email">
                 <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>
-
             <ion-item>
               <ion-input label-placement="floating" :label="translate('Password')" name="password"
                 v-model="registerData.password" id="password" type="password" required />
             </ion-item>
-
             <ion-item>
               <ion-input label-placement="floating" :label="translate('Confirm Password')" name="password"
                 v-model="registerData.confirmPassword" id="password" type="password" required />
             </ion-item>
-
             <div class="ion-padding">
               <ion-button type="submit" expand="block">{{ translate("Register") }}</ion-button>
               <ion-button @click="router.push('/login')" fill="clear" expand="block">{{ translate("Back to Login") }}</ion-button>
@@ -92,7 +88,7 @@ async function userRegister() {
   try {
     const validationErrors = validateCreateUserDetail();
 
-    if (validationErrors.length > 0) {
+    if(validationErrors.length > 0) {
       const errorMessages = validationErrors.join(' ');
       logger.error(translate(errorMessages));
       showToast(translate(errorMessages));
@@ -107,7 +103,7 @@ async function userRegister() {
 
   } catch (err: any) {
     let errorMessage = "Failed to create user.";
-    if (err?.response?.data?.error?.message) {
+    if(err?.response?.data?.error?.message) {
       errorMessage = err.response.data.error.message;
     }
     logger.error('error', err);
