@@ -1,28 +1,29 @@
 <template>
   <ion-page>
     <ion-content>
-      <div class="flex">
+      <div class="flex-container">
         <ion-card>
-        <form class="login-container" @keyup.enter="login(form)" @submit.prevent="login(form)">
-          <Logo />
-          <ion-item lines="full" v-if="!baseURL">
-            <ion-input label-placement="fixed" :label="(translate('OMS'))" v-model="instanceUrl" type="text" required />
-          </ion-item>
-          <ion-item lines="full">
-            <ion-input label-placement="fixed" :label="(translate('Username'))" v-model="username" type="text" required />
-          </ion-item>
-          <ion-item lines="full">
-            <ion-input label-placement="fixed" :label="(translate('Password'))" v-model="password" type="password" required />
-          </ion-item>
-
-          <div class="ion-padding">
-            <ion-button type="submit" color="primary"  expand="block">{{translate("Login") }}</ion-button>
-            <ion-button type="button" @click="router.push('/forgetPassword')" color="primary" fill="clear" expand="block">{{translate("Forget Password?") }}</ion-button>
-          </div>
-        </form>
-         </ion-card>
-         <ion-button @click="router.push('/register')" color="dark" >{{translate("Register") }}</ion-button>
-       </div>
+          <form class="form-card" @keyup.enter="login(form)" @submit.prevent="login(form)">
+            <Logo />
+            <ion-item lines="full" v-if="!baseURL">
+              <ion-input label-placement="fixed" :label="(translate('OMS'))" v-model="instanceUrl" type="text" required />
+            </ion-item>
+            <ion-item lines="full">
+              <ion-input label-placement="fixed" :label="(translate('Username'))" v-model="username" type="text" required />
+            </ion-item>
+            <ion-item lines="full">
+              <ion-input label-placement="fixed" :label="(translate('Password'))" v-model="password" type="password" required/>
+            </ion-item>
+            <div class="ion-padding">
+              <ion-button type="submit" color="primary"  expand="block">{{ translate("Login") }}</ion-button>
+              <ion-button @click="router.push('/forgetPassword')" color="primary" fill="clear" expand="block">{{ translate("Forget Password?") }}</ion-button>
+            </div>
+          </form>
+        </ion-card>
+        <div>
+          <ion-button @click="router.push('/register')" color="dark" >{{ translate("Register") }}</ion-button>
+        </div>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -81,19 +82,5 @@ async function login() {
   } catch (error) {
     showToast(translate("Username or password is incorrect"));
   }
-};
-
+}
 </script>
-<style scoped>
-.login-container {
-  width: 375px;
-}
-
-.flex {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>

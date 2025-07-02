@@ -6,7 +6,6 @@ import Login from '@/views/Login.vue'
 import store from '@/store'
 import Home from '@/views/Home.vue';
 
-
 const authGuard = (to: any, from: any, next: any) => {
   if (store.getters['user/isAuthenticated']) {
       next()

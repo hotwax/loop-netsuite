@@ -1,9 +1,9 @@
 <template>
   <ion-page>
-    <ion-content class="ion-padding">
-      <div class="auth-container">
+    <ion-content>
+      <div class="flex-container">
         <ion-card>
-          <form @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
+          <form class="form-card" @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
             <Logo />
             <ion-item>
               <ion-input label-placement="floating" :label="translate('Full name')" v-model="registerData.fullName">
@@ -70,33 +70,33 @@ function validateCreateUserDetail() {
   const validationErrors: string[] = [];
 
   if (!registerData.value.fullName) {
-    validationErrors.push(translate('Name is required.'));
+    validationErrors.push(translate("Name is required."));
   }
   if (!registerData.value.emailAddress) {
-    validationErrors.push(translate('Email address is required.'));
+    validationErrors.push(translate("Email address is required."));
   }
   if (
     registerData.value.emailAddress &&
     !isValidEmail(registerData.value.emailAddress)
   ) {
-    validationErrors.push(translate('Invalid email address.'));
+    validationErrors.push(translate("Invalid email address."));
   }
   if (
     registerData.value.password &&
     !isValidPassword(registerData.value.password)
   ) {
-    validationErrors.push(translate('Password is not valid'));
+    validationErrors.push(translate("Password is not valid"));
   }
   if (
     registerData.value.password &&
     registerData.value.confirmPassword &&
     registerData.value.password !== registerData.value.confirmPassword
   ) {
-    validationErrors.push(translate('Password is not matching with confirm password.'));
+    validationErrors.push(translate("Password is not matching with confirm password."));
   }
 
   return validationErrors;
-};
+}
 // TODO: userRegister function is not functional yet, need to implement the API call
 async function userRegister() {
   try {
@@ -114,17 +114,16 @@ async function userRegister() {
     };
 
     const response = await store.dispatch('user/register', payload);
-    showToast(translate('User created successfully'));
+    showToast(translate("User created successfully"));
     router.push('/login');
 
   } catch (err: any) {
-    let errorMessage = 'Failed to create user.';
+    let errorMessage = "Failed to create user.";
     if (err?.response?.data?.error?.message) {
       errorMessage = err.response.data.error.message;
     }
     logger.error('error', err);
     showToast(translate(errorMessage));
   }
-};
-
+}
 </script>

@@ -9,15 +9,18 @@ import { updateToken } from '@/adapter'
 import logger from '@/logger'
 
 const actions: ActionTree<UserState, RootState> = {
+
   /**
  * Login user and return api key
  */
+
   async login({ commit, dispatch }, { username, password }) {
+
     const translate = (key: string) => i18n.global.t(key)
     try {
       const resp = await UserService.login(username, password)
-      if(resp.status === 200 && resp.data) {
-        if(resp.data.api_key) {
+      if (resp.status === 200 && resp.data) {
+        if (resp.data.api_key) {
           commit(types.USER_TOKEN_CHANGED, { newToken: resp.data.api_key })
           updateToken(resp.data.api_key)
           await dispatch('getProfile')
