@@ -50,9 +50,9 @@ const registerUser = async (payload: any): Promise<any> => {
 }
 
 export const UserService = {
-  login,
-  getProfile,
   checkPermission,
   createUser,
+  getProfile,
+  login,
   registerUser
 }
