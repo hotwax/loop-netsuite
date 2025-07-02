@@ -20,9 +20,7 @@
             </div>
           </form>
         </ion-card>
-        <div>
-          <ion-button @click="router.push('/register')" color="dark" >{{ translate("Register") }}</ion-button>
-        </div>
+        <ion-button @click="router.push('/register')" color="dark" >{{ translate("Register") }}</ion-button>
       </div>
     </ion-content>
   </ion-page>
@@ -35,14 +33,13 @@ import {
   IonContent,
   IonInput,
   IonItem,
-  IonPage,
+  IonPage
 } from "@ionic/vue";
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
-
 import Logo from "@/components/Logo.vue";
 
 const router = useRouter();

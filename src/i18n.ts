@@ -23,7 +23,7 @@ const i18n = createI18n({
 })
 
 const translate = (key: string) => {
-  if (!key) return ''
+  if(!key) return ''
   return i18n.global.t<string>(key) // or: as unknown as string
 }
 

@@ -69,29 +69,19 @@ const registerData = ref({
 function validateCreateUserDetail() {
   const validationErrors: string[] = [];
 
-  if (!registerData.value.fullName) {
+  if(!registerData.value.fullName) {
     validationErrors.push(translate("Name is required."));
   }
-  if (!registerData.value.emailAddress) {
+  if(!registerData.value.emailAddress) {
     validationErrors.push(translate("Email address is required."));
   }
-  if (
-    registerData.value.emailAddress &&
-    !isValidEmail(registerData.value.emailAddress)
-  ) {
+  if(registerData.value.emailAddress && !isValidEmail(registerData.value.emailAddress)) {
     validationErrors.push(translate("Invalid email address."));
   }
-  if (
-    registerData.value.password &&
-    !isValidPassword(registerData.value.password)
-  ) {
+  if(registerData.value.password && !isValidPassword(registerData.value.password)) {
     validationErrors.push(translate("Password is not valid"));
   }
-  if (
-    registerData.value.password &&
-    registerData.value.confirmPassword &&
-    registerData.value.password !== registerData.value.confirmPassword
-  ) {
+  if(registerData.value.password &&registerData.value.confirmPassword && registerData.value.password !== registerData.value.confirmPassword) {
     validationErrors.push(translate("Password is not matching with confirm password."));
   }
 
@@ -109,9 +99,7 @@ async function userRegister() {
       return;
     }
 
-    const payload = {
-      ...registerData.value
-    };
+    const payload = {...registerData.value};
 
     const response = await store.dispatch('user/register', payload);
     showToast(translate("User created successfully"));

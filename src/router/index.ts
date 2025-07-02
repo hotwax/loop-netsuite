@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
     beforeEnter: loginGuard
   },
-   {
+  {
     path: '/register',
     name: 'Register',
     component: Register
