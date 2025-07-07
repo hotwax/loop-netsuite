@@ -50,7 +50,6 @@ const password = ref("");
 const instanceUrl = ref("");
 
 const baseURL = process.env.VUE_APP_BASE_URL;
-const alias = JSON.parse(process.env.VUE_APP_ALIAS as string);
 
 const currentInstanceUrl = computed(() => store.getters["user/getInstanceUrl"]);
 
@@ -59,12 +58,6 @@ onMounted(() => {
 });
 
 async function login() {
-  const trimmedInstanceUrl = instanceUrl.value.trim().toLowerCase();
-  if(!baseURL) {
-    const resolvedUrl = alias[trimmedInstanceUrl] || trimmedInstanceUrl;
-    store.dispatch("user/setUserInstanceUrl", resolvedUrl);
-  }
-
   try {
     const response: any = await store.dispatch("user/login", {
       username: username.value,
