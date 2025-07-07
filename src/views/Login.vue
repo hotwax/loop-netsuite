@@ -74,7 +74,7 @@ async function login() {
     if(response.api_key) {
       username.value = "";
       password.value = "";
-      router.push("/home");
+      router.push("/");
     }
   } catch (error) {
     showToast(translate("Username or password is incorrect"));

@@ -32,6 +32,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/user-detail',
     name: 'UserDetail',
     component: UserDetailPage,
+    beforeEnter: authGuard
   },
   {
     path: '/login',
