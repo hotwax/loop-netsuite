@@ -64,7 +64,7 @@ function validateCreateUserDetail() {
 async function forgetPassword() {
   try {
     const validationErrors = validateCreateUserDetail();
-    if(validationErrors.length > 0) {
+    if(validationErrors.length) {
       const errorMessages = validationErrors.join(" ");
       logger.error(errorMessages);
       showToast(errorMessages);
