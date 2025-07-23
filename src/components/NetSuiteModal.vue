@@ -11,16 +11,23 @@
   </ion-header>
   <ion-content class="ion-padding-top">
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(('NetSuite Account ID'))"  type="text" required />
+      <ion-input  label-placement="floating" :label="(('NetSuite Account ID'))" v-model="netSuiteDetails.remoteId" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(('Open SHH Private Key'))"  type="text" required />
+      <ion-input  label-placement="floating" :label="(('NetSuite Consumer Key'))" v-model="netSuiteDetails.sharedSecret" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(('NetSuite Consumer Key'))"  type="text" required />
+      <ion-input  label-placement="floating" :label="(('NetSuite Certificate ID'))" v-model="netSuiteDetails.sendSharedSecret" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(('NetSuite Certificate ID'))"  type="text" required />
+      <ion-icon :icon="cloudUploadOutline" slot="end" />
+      <ion-label>
+        {{ ("Import PEM File") }}
+      </ion-label>
+      <input @change="uploadPemFile" ref="file" type="file" class="ion-hide"  id="updatePemFile" accept=".pem"/>
+      <label for="updatePemFile" class="pointer">
+        {{ ("Upload PEM File") }}
+      </label>
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">
@@ -42,18 +49,33 @@
     IonInput,
     IonIcon,
     IonFab,
-    IonFabButton,
+    IonFabButton, 
+    IonLabel,
     modalController,
   } from '@ionic/vue';
-  import { closeOutline, saveOutline } from 'ionicons/icons';
+  import { closeOutline, saveOutline, cloudUploadOutline } from 'ionicons/icons';
   import { defineProps, ref } from 'vue';
-  const name = ref();
+  
   const props = defineProps(["accountType"]);
 
-  // Extract the accountType prop
   const accountType = props.accountType as string;
-  
-  // Methods to handle modal actions
+  const netSuiteDetails = ref({
+    remoteId: '',
+    sharedSecret: '',
+    sendSharedSecret: '',
+    sshKey: '',
+    accountType: accountType === 'Sandbox' ? 'Sandbox' : 'Production'
+  });
+     
+  const uploadPemFile = async (event: any) => {
+    const selectedFile = event.target.files[0];
+    console.log(`Selected file: ${selectedFile}`);
+    
+    if (!selectedFile) {
+      return;
+    }
+    netSuiteDetails.value.sshKey = selectedFile;
+  }
   const cancel = () => modalController.dismiss(null, 'cancel');
-  const confirm = () => modalController.dismiss(name.value, 'confirm');
+  const confirm = () => modalController.dismiss(netSuiteDetails.value, 'save')
 </script>

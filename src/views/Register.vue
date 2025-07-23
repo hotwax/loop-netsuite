@@ -6,7 +6,7 @@
           <form class="form-card" @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
             <Logo />
             <ion-item>
-              <ion-input label-placement="floating" :label="translate('Full name')" v-model="registerData.fullName">
+              <ion-input label-placement="floating" :label="translate('Full name')" v-model="registerData.userFullName">
                  <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>
@@ -16,12 +16,24 @@
               </ion-input>
             </ion-item>
             <ion-item>
+              <ion-input label-placement="floating" :label="translate('Organization Name')" v-model="registerData.organizationName" type="text">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label-placement="floating" :label="translate('Username')" v-model="registerData.username" type="text">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label-placement="floating" :label="translate('Contact Number')" v-model="registerData.contactNumber" type="number">
+              </ion-input>
+            </ion-item>
+            <ion-item>
               <ion-input label-placement="floating" :label="translate('Password')" name="password"
-                v-model="registerData.password" id="password" type="password" required />
+                v-model="registerData.newPassword" id="password" type="password" required />
             </ion-item>
             <ion-item>
               <ion-input label-placement="floating" :label="translate('Confirm Password')" name="password"
-                v-model="registerData.confirmPassword" id="password" type="password" required />
+                v-model="registerData.newPasswordVerify" id="password" type="password" required />
             </ion-item>
             <div class="ion-padding">
               <ion-button type="submit" expand="block">{{ translate("Register") }}</ion-button>
@@ -56,16 +68,19 @@ const router = useRouter();
 const store = useStore();
 
 const registerData = ref({
-  fullName: '',
+  userFullName: '',
   emailAddress: '',
-  password: '',
-  confirmPassword: ''
+  organizationName: '',
+  username: '',
+  contactNumber: '',
+  newPassword: '',
+  newPasswordVerify: ''
 });
 
 function validateCreateUserDetail() {
   const validationErrors: string[] = [];
 
-  if(!registerData.value.fullName) {
+  if(!registerData.value.userFullName) {
     validationErrors.push(translate("Name is required."));
   }
   if(!registerData.value.emailAddress) {
@@ -74,10 +89,10 @@ function validateCreateUserDetail() {
   if(registerData.value.emailAddress && !isValidEmail(registerData.value.emailAddress)) {
     validationErrors.push(translate("Invalid email address."));
   }
-  if(registerData.value.password && !isValidPassword(registerData.value.password)) {
+  if(registerData.value.newPassword && !isValidPassword(registerData.value.newPassword)) {
     validationErrors.push(translate("Password is not valid"));
   }
-  if(registerData.value.password &&registerData.value.confirmPassword && registerData.value.password !== registerData.value.confirmPassword) {
+  if(registerData.value.newPassword &&registerData.value.newPasswordVerify && registerData.value.newPassword !== registerData.value.newPasswordVerify) {
     validationErrors.push(translate("Password is not matching with confirm password."));
   }
 
@@ -96,8 +111,12 @@ async function userRegister() {
     }
 
     const payload = {...registerData.value};
+    console.log("Register Payload:  eee ", payload);
+    
 
-    const response = await store.dispatch('user/register', payload);
+    const response: any = await store.dispatch('user/register', payload);
+    console.log("Register Response: ", response);
+    
     showToast(translate("User created successfully"));
     router.push('/login');
 
