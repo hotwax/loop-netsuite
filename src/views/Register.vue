@@ -80,7 +80,7 @@ const registerData = ref({
 function validateCreateUserDetail() {
   const validationErrors: string[] = [];
 
-  if(!registerData.value.userFullName) {
+  if(!registerData.value.userFullName?.trim()) {
     validationErrors.push(translate("Name is required."));
   }
   if(!registerData.value.emailAddress) {
@@ -126,7 +126,7 @@ async function userRegister() {
       errorMessage = err.response.data.error.message;
     }
     logger.error('error', err);
-    showToast(translate(errorMessage));
+    showToast(errorMessage);
   }
 }
 </script>
