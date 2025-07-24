@@ -79,7 +79,7 @@ async function forgetPassword() {
       errorMessage = err.response.data.error.message;
     }
     logger.error("error", err);
-    showToast(translate(errorMessage));
+    showToast(errorMessage);
   }
 }
 </script>
