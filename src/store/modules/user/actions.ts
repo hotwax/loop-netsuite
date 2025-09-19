@@ -5,8 +5,10 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { showToast } from '@/utils'
 import i18n from '@/i18n'
-import { api, updateToken } from '@/adapter'
+import { updateToken } from '@/adapter'
 import logger from '@/logger'
+import { translate } from "@hotwax/dxp-components";
+
 const actions: ActionTree<UserState, RootState> = {
 
   /**
@@ -44,8 +46,9 @@ const actions: ActionTree<UserState, RootState> = {
   async getProfile({ commit, dispatch }) {
     try {
       const resp = await UserService.getProfile()
+      return resp
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async getNetSuiteDetails({ commit, dispatch }) {
@@ -55,7 +58,7 @@ const actions: ActionTree<UserState, RootState> = {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async register({ commit, dispatch }, payload) {
@@ -67,40 +70,38 @@ const actions: ActionTree<UserState, RootState> = {
         return Promise.reject(new Error(resp.data._ERROR_MESSAGE_));
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
+      showToast(translate("unable to create a user"))
     }
   },
   async netSuiteCredentials({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.uploadNetSuiteCredentials(payload)
-      console.log(`Response in action: ${JSON.stringify(resp)}`);
       if (resp.status === 200 && resp.data) {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async deleteNetSuiteCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteNetSuiteCredential(payload)
-      console.log(`Response in action: ${JSON.stringify(resp)}`);
       if (resp.status === 200 && resp.data) {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async loopCredentials({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.uploadLoopCredentials(payload)
-      console.log(`Response in action: ${JSON.stringify(resp)}`);
       if (resp.status === 200 && resp.data) {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async getLoopDetails({ commit, dispatch }) {
@@ -110,29 +111,77 @@ const actions: ActionTree<UserState, RootState> = {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async deleteLoopCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteLoopCredential(payload)
-      console.log(`Response in action: ${JSON.stringify(resp)}`);
       if (resp.status === 200 && resp.data) {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
     }
   },
   async verifyNetsuiteCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.verifyNetsuiteCredential(payload)
-      console.log(`Response in action: ${JSON.stringify(resp)}`);
       if (resp.status === 200 && resp.data) {
         return resp.data;
       }
     } catch (err) {
-      logger.error('Failed to fetch user profile information', err)
+      logger.error(err)
+    }
+  },
+  async verifyloopCredential({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.verifyloopCredential(payload)
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async getVerifyLoopWebhook({ commit, dispatch }) {
+    try {
+      const resp = await UserService.getVerifyLoopWebhook()
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async getAPIKey({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.getAPIKey(payload)
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async getNetSuiteRMAMappingList({ commit, dispatch }) {
+    try {
+      const resp = await UserService.getNetSuiteRMAMappingList()
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async getNetSuiteRMAMapping({ commit, dispatch }) {
+    try {
+      const resp = await UserService.getNetSuiteRMAMapping()
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
     }
   },
 }

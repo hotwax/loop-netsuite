@@ -69,8 +69,6 @@
      
   const uploadPemFile = async (event: any) => {
     const selectedFile = event.target.files[0];
-    console.log(`Selected file: ${selectedFile}`);
-    
     if (!selectedFile) {
       return;
     }

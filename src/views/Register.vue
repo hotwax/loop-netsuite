@@ -105,27 +105,26 @@ async function userRegister() {
 
     if(validationErrors.length) {
       const errorMessages = validationErrors.join(' ');
-      logger.error(translate(errorMessages));
-      showToast(translate(errorMessages));
+      logger.error(errorMessages);
+      showToast(errorMessages);
       return;
     }
 
     const payload = {...registerData.value};
-    console.log("Register Payload:  eee ", payload);
-    
 
     const response: any = await store.dispatch('user/register', payload);
-    console.log("Register Response: ", response);
     
-    showToast(translate("User created successfully"));
-    router.push('/login');
+    if (response) {
+      showToast(translate('User registered successfully'));
+      router.push('/login');
+    }
 
   } catch (err: any) {
     let errorMessage = "Failed to create user.";
     if(err?.response?.data?.error?.message) {
       errorMessage = err.response.data.error.message;
     }
-    logger.error('error', err);
+    logger.error(err);
     showToast(errorMessage);
   }
 }

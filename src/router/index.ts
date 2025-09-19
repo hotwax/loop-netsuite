@@ -4,7 +4,6 @@ import Register from '@/views/Register.vue';
 import ForgetPassword from '@/views/ForgetPassword.vue';
 import Login from '@/views/Login.vue'
 import store from '@/store'
-import Home from '@/views/Home.vue';
 import UserDetailPage from '@/views/UserDetailPage.vue';
 
 const authGuard = (to: any, from: any, next: any) => {

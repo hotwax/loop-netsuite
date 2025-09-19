@@ -44,8 +44,6 @@ const getNetSuiteDetails = async (): Promise <any> => {
 }
 
 const registerUser = async (payload: any): Promise<any> => {
-  console.log("User services",payload);
-  
   return api({
     url: "/netsuite-loop-connector/register",
     method: "post",
@@ -115,6 +113,48 @@ const verifyNetsuiteCredential = async (payload: any): Promise<any> => {
   });
 }
 
+const verifyloopCredential = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
+    method: "post",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId,
+      accountType: payload.accountType
+    }
+  });
+}
+
+const getVerifyLoopWebhook = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
+    method: "get",
+  });
+}
+
+const getAPIKey = async (payload: any): Promise<any> => {
+  return api({
+    url: `/netsuite-loop-connector/organizations/apiKey`,
+    method: "post",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId
+    }
+  });
+}
+
+const getNetSuiteRMAMappingList = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/returnIntegrationTypeMapping",
+    method: "get",
+  });
+}
+
+const getNetSuiteRMAMapping = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "get",
+  });
+}
+
 export const UserService = {
   checkPermission,
   getProfile,
@@ -122,9 +162,14 @@ export const UserService = {
   registerUser,
   uploadNetSuiteCredentials,
   getNetSuiteDetails,
+  getVerifyLoopWebhook,
   deleteNetSuiteCredential,
   uploadLoopCredentials,
   getLoopDetails,
   deleteLoopCredential,
-  verifyNetsuiteCredential
+  verifyloopCredential,
+  verifyNetsuiteCredential,
+  getAPIKey,
+  getNetSuiteRMAMappingList,
+  getNetSuiteRMAMapping
 }

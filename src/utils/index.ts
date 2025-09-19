@@ -1,3 +1,5 @@
+import { translate } from '@/i18n';
+import { Plugins } from '@capacitor/core';
 import { toastController } from '@ionic/vue';
 
 const showToast = async (message: string, configButtons?: any) => {
@@ -30,4 +32,18 @@ const isValidPassword = (password : string) => {
   return passwordPattern.test(password);
 }
 
-export { showToast, isValidEmail, isValidPassword }
+const copyToClipboard = async (text: any, showCopiedValue = true) => {
+  const { Clipboard } = Plugins;
+
+  await Clipboard.write({
+    string: text,
+  }).then(() => {
+    if(showCopiedValue) {
+      showToast(translate(`${translate("Copied")}: ${text}`));
+    } else {
+      showToast(translate("Copied to clipboard"));
+    }
+  });
+}
+
+export { showToast, isValidEmail, isValidPassword, copyToClipboard }
