@@ -64,10 +64,10 @@ async function forgetPassword() {
     const validationErrors = validateCreateUserDetail();
     if(validationErrors) {
       const errorMessages = validationErrors
-        logger.error(errorMessages);
-        showToast(errorMessages);
-        return;   
-     }
+      logger.error(errorMessages);
+      showToast(errorMessages);
+      return;   
+    }
     const payload = emailAddress.value;
 
     showToast(translate("Reset password link sent to your email."));
