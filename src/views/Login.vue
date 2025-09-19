@@ -41,6 +41,7 @@ import { useStore } from "@/store";
 import { showToast } from "@/utils";
 import { translate } from "@/i18n";
 import Logo from "@/components/Logo.vue";
+import logger from "@/logger";
 
 const router = useRouter();
 const store = useStore();
@@ -70,6 +71,7 @@ async function login() {
       router.push("/home");
     }
   } catch (error) {
+    logger.error("Login error: ", error);
     showToast(translate("Username or password is incorrect"));
   }
 }

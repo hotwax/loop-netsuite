@@ -48,31 +48,29 @@ const store = useStore();
 
 const emailAddress = ref("");
 
-function validateCreateUserDetail() {
-  const validationErrors: string[] = [];
-  if(!emailAddress.value) {
-    validationErrors.push(translate("Email address is required."));
-  }
-  if(emailAddress.value && !isValidEmail(emailAddress.value)) {
-    validationErrors.push(translate("Invalid email address."));
-  }
-  
-  return validationErrors;
+function validateCreateUserDetail(): string | null {
+    if(!emailAddress.value) {
+      return translate("Email address is required.");
+    }
+    if(emailAddress.value && !isValidEmail(emailAddress.value)) {
+      return translate("Invalid email address.");
+    }
+    return null;
 }
 
 //  TODO: forgetPassword function is not functional yet, need to implement the API call
 async function forgetPassword() {
   try {
     const validationErrors = validateCreateUserDetail();
-    if(validationErrors.length) {
-      const errorMessages = validationErrors.join(" ");
-      logger.error(errorMessages);
-      showToast(errorMessages);
-      return;
-    }
+    if(validationErrors) {
+      const errorMessages = validationErrors
+        logger.error(errorMessages);
+        showToast(errorMessages);
+        return;   
+     }
     const payload = emailAddress.value;
 
-    showToast(translate("Reset link sent to your email."));
+    showToast(translate("Reset password link sent to your email."));
   } catch (err: any) {
     let errorMessage = "Failed to create user."
     if(err?.response?.data?.error?.message) {
