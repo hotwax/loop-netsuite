@@ -1,106 +1,78 @@
 <template>
   <ion-page>
     <ion-content>
-      <div class="flex">
-        <form class="login-container" @keyup.enter="login(form)" @submit.prevent="login(form)">
-          <Logo />
-
-          <ion-item lines="full" v-if="!baseURL">
-            <ion-input label-placement="fixed" :label="('OMS')" name="instanceUrl" v-model="instanceUrl" id="instanceUrl" type="text" required />
-
-          </ion-item>
-          <ion-item lines="full">
-            <ion-input label-placement="fixed" :label="('Username')" name="username" v-model="username" id="username" type="text" required />
-
-          </ion-item>
-          <ion-item lines="none">
-            <ion-input label-placement="fixed" :label="('Password')" name="password" v-model="password" id="password" type="password" required />
-
-          </ion-item>
-
-          <div class="ion-padding">
-            <ion-button type="submit" color="primary" fill="outline" expand="block">{{("Login") }}</ion-button>
-          </div>
-        </form>
+      <div class="flex-container">
+        <ion-card>
+          <form class="form-card" @keyup.enter="login(form)" @submit.prevent="login(form)">
+            <Logo />
+            <ion-item lines="full" v-if="!baseURL">
+              <ion-input label-placement="fixed" :label="(translate('OMS'))" v-model="instanceUrl" type="text" required />
+            </ion-item>
+            <ion-item lines="full">
+              <ion-input label-placement="fixed" :label="(translate('Username'))" v-model="username" type="text" required />
+            </ion-item>
+            <ion-item lines="full">
+              <ion-input label-placement="fixed" :label="(translate('Password'))" v-model="password" type="password" required/>
+            </ion-item>
+            <div class="ion-padding">
+              <ion-button type="submit" color="primary"  expand="block">{{ translate("Login") }}</ion-button>
+              <ion-button @click="router.push('/forgetPassword')" color="primary" fill="clear" expand="block">{{ translate("Forget Password?") }}</ion-button>
+            </div>
+          </form>
+        </ion-card>
+        <ion-button @click="router.push('/register')" color="dark" >{{ translate("Register") }}</ion-button>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script lang="ts">
-import { 
+<script lang="ts" setup>
+import {
   IonButton,
+  IonCard,
   IonContent,
   IonInput,
   IonItem,
-  IonPage 
+  IonPage
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "@/store";
-import { mapGetters } from 'vuex';
-import {showToast} from "@/utils";
-import Logo from '@/components/Logo.vue';
+import { showToast } from "@/utils";
+import { translate } from "@/i18n";
+import Logo from "@/components/Logo.vue";
+import logger from "@/logger";
 
-export default defineComponent({
-  name: "Login",
-  components: {
-    IonButton,
-    IonContent,
-    IonInput,
-    IonItem,
-    IonPage,
-    Logo
-  },
-  data() {
-    return {
-      username: "",
-      password: "",
-      instanceUrl: "",
-      baseURL: process.env.VUE_APP_BASE_URL,
-      alias: JSON.parse(process.env.VUE_APP_ALIAS as any)
-    };
-  },
-  computed: {
-    ...mapGetters({
-      currentInstanceUrl: 'user/getInstanceUrl'
-    })
-  },
-  mounted() {
-    this.instanceUrl = this.currentInstanceUrl;
-  },
-  methods: {
-    login: function () {
-      const instanceURL = this.instanceUrl.trim().toLowerCase();
-      if(!this.baseURL) this.store.dispatch("user/setUserInstanceUrl", this.alias[instanceURL] ? this.alias[instanceURL] : instanceURL);
-      const { username, password } = this;
-      this.store.dispatch("user/login", { username, password }).then((data: any) => {
-        if (data.api_key) {
-          this.username = ''
-          this.password = ''
-          this.router.push('/home')
-        }
-      }).catch((error: any) => {
-        showToast("Username or password is incorrect");
-      });
-    }
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    return { router, store };
-  }
+const router = useRouter();
+const store = useStore();
+
+const username = ref("");
+const password = ref("");
+const instanceUrl = ref("");
+
+const baseURL = process.env.VUE_APP_BASE_URL;
+
+const currentInstanceUrl = computed(() => store.getters["user/getInstanceUrl"]);
+
+onMounted(() => {
+  instanceUrl.value = currentInstanceUrl.value;
 });
-</script>
-<style scoped>
-.login-container {
-  width: 375px;
-}
 
-.flex {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+async function login() {
+  try {
+    const response: any = await store.dispatch("user/login", {
+      username: username.value,
+      password: password.value,
+    });
+
+    if(response.api_key) {
+      username.value = "";
+      password.value = "";
+      router.push("/home");
+    }
+  } catch (error) {
+    logger.error("Login error: ", error);
+    showToast(translate("Username or password is incorrect"));
+  }
 }
-</style>
+</script>

@@ -1,21 +1,33 @@
 import { toastController } from '@ionic/vue';
 
-// TODO Use separate files for specific utilities
+const showToast = async (message: string, configButtons?: any) => {
+  const defaultButtons = [{
+    text: 'Dismiss',
+    role: 'cancel'
+  }]
 
-// TODO Remove it when HC APIs are fully REST compliant
-const hasError = (response: any) => {
-  return !!response.data._ERROR_MESSAGE_ || !!response.data._ERROR_MESSAGE_LIST_;
-}
+  if (configButtons) defaultButtons.push(...configButtons);
 
-const showToast = async (message: string) => {
   const toast = await toastController
     .create({
-      message,
+      message: message,
       duration: 3000,
-      position: 'top'
+      position: 'top',
+      buttons: defaultButtons
     })
   return toast.present();
 }
 
+const isValidEmail = (email : string) => {
+  // Regular expression pattern for a valid email address
+  const emailPattern = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+  return emailPattern.test(email);
+}
 
-export { showToast, hasError}
+const isValidPassword = (password : string) => {
+  // Regular expression pattern for a valid password
+  const passwordPattern = /^.*(?=.{5,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).*$/;
+  return passwordPattern.test(password);
+}
+
+export { showToast, isValidEmail, isValidPassword }

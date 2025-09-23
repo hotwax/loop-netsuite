@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import Home from "@/views/Home.vue" // add new view 
+import Register from '@/views/Register.vue';
+import ForgetPassword from '@/views/ForgetPassword.vue';
 import Login from '@/views/Login.vue'
 import store from '@/store'
+import Home from '@/views/Home.vue';
 
 const authGuard = (to: any, from: any, next: any) => {
   if (store.getters['user/isAuthenticated']) {
@@ -36,7 +38,17 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Login',
     component: Login,
     beforeEnter: loginGuard
-  }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
+  {
+    path: '/forgetPassword',
+    name: 'ForgetPassword',
+    component: ForgetPassword
+  },
 ]
 
 const router = createRouter({

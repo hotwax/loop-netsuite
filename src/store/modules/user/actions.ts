@@ -5,8 +5,7 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { showToast } from '@/utils'
 import i18n from '@/i18n'
-import { updateInstanceUrl, updateToken, resetConfig } from '@/adapter'
-
+import { updateToken } from '@/adapter'
 import logger from '@/logger'
 
 const actions: ActionTree<UserState, RootState> = {
@@ -54,8 +53,6 @@ const actions: ActionTree<UserState, RootState> = {
       logger.error('Failed to fetch user profile information', err)
     }
   }
-
-
 }
 
 export default actions;
