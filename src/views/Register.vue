@@ -77,40 +77,39 @@ const registerData = ref({
   newPasswordVerify: ''
 });
 
-function validateCreateUserDetail() {
-  const validationErrors: string[] = [];
+function validateCreateUserDetail(): string | null {
 
   if(!registerData.value.userFullName?.trim()) {
-    validationErrors.push(translate("Name is required."));
+    return (translate("Name is required."));
   }
   if(!registerData.value.emailAddress) {
-    validationErrors.push(translate("Email address is required."));
+    return (translate("Email address is required."));
   }
   if(registerData.value.emailAddress && !isValidEmail(registerData.value.emailAddress)) {
-    validationErrors.push(translate("Invalid email address."));
+    return (translate("Invalid email address."));
   }
   if(registerData.value.newPassword && !isValidPassword(registerData.value.newPassword)) {
-    validationErrors.push(translate("Password is not valid"));
+    return (translate("Password is not valid"));
   }
   if(registerData.value.newPassword &&registerData.value.newPasswordVerify && registerData.value.newPassword !== registerData.value.newPasswordVerify) {
-    validationErrors.push(translate("Password is not matching with confirm password."));
+    return (translate("Password is not matching with confirm password."));
   }
 
-  return validationErrors;
+  return null;
 }
 // TODO: userRegister function is not functional yet, need to implement the API call
 async function userRegister() {
   try {
     const validationErrors = validateCreateUserDetail();
 
-    if(validationErrors.length) {
-      const errorMessages = validationErrors.join(' ');
+    if(validationErrors) {
+      const errorMessages = validationErrors;
       logger.error(errorMessages);
       showToast(errorMessages);
       return;
     }
 
-    const payload = {...registerData.value};
+    const payload = registerData.value;
 
     const response: any = await store.dispatch('user/register', payload);
     
