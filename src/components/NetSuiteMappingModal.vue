@@ -68,7 +68,7 @@ onMounted(async() => {
 async function getNetSuiteRMAMappingList() {
   try {
     const response = await store.dispatch('user/getNetSuiteRMAMappingList');
-    if (!response) {
+    if (response) {
       netSuiteMappinglist.value = response.enumList
     }
   } catch (error) {
