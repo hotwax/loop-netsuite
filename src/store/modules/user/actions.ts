@@ -84,6 +84,36 @@ const actions: ActionTree<UserState, RootState> = {
       logger.error(err)
     }
   },
+  async netsuiteMapping({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.postNetsuiteMapping(payload)
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async syncNetsuiteMapping({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.syncNetsuiteMapping(payload)
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async deleteIntegrationTypeMappings({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.deleteIntegrationTypeMappings(payload)
+      if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
   async deleteNetSuiteCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteNetSuiteCredential(payload)

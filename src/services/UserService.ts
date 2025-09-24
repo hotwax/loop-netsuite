@@ -2,7 +2,7 @@ import { api, client } from '@/adapter';
 import store from '@/store';
 
 const login = async (username: string, password: string): Promise<any> => {
-  const url =  process.env.VUE_APP_BASE_URL
+  const url = process.env.VUE_APP_BASE_URL
   const baseURL = url.startsWith('http') ? url.includes('/rest/s1/netsuite-loop-connector') ? url : `${url}/rest/s1/netsuite-loop-connector/` : `https://${url}.hotwax.io/rest/s1/netsuite-loop-connector/`;
   return await client({
     url: "login",
@@ -29,16 +29,16 @@ const checkPermission = async (payload: any): Promise<any> => {
   });
 }
 
-const getProfile = async (): Promise <any> => {
+const getProfile = async (): Promise<any> => {
   return api({
-    url: "/netsuite-loop-connector/organizations/profile", 
+    url: "/netsuite-loop-connector/organizations/profile",
     method: "get",
   });
 }
 
-const getNetSuiteDetails = async (): Promise <any> => {
+const getNetSuiteDetails = async (): Promise<any> => {
   return api({
-    url: "/netsuite-loop-connector/organizations/netsuiteDetails", 
+    url: "/netsuite-loop-connector/organizations/netsuiteDetails",
     method: "get",
   });
 }
@@ -53,11 +53,11 @@ const registerUser = async (payload: any): Promise<any> => {
 
 const uploadNetSuiteCredentials = async (payload: any): Promise<any> => {
   const formData = new FormData();
-    formData.append('sshKey', payload.sshKey, payload.sshKey.name);
-    formData.append('remoteId', payload.remoteId);
-    formData.append('sharedSecret', payload.sharedSecret);
-    formData.append('sendSharedSecret', payload.sendSharedSecret);
-    formData.append('accountType', payload.accountType);
+  formData.append('sshKey', payload.sshKey, payload.sshKey.name);
+  formData.append('remoteId', payload.remoteId);
+  formData.append('sharedSecret', payload.sharedSecret);
+  formData.append('sendSharedSecret', payload.sendSharedSecret);
+  formData.append('accountType', payload.accountType);
   return api({
     url: "/netsuite-loop-connector/organizations/netsuiteDetails",
     method: "post",
@@ -85,9 +85,9 @@ const uploadLoopCredentials = async (payload: any): Promise<any> => {
   });
 }
 
-const getLoopDetails = async (): Promise <any> => {
+const getLoopDetails = async (): Promise<any> => {
   return api({
-    url: "/netsuite-loop-connector/organizations/loopDetails", 
+    url: "/netsuite-loop-connector/organizations/loopDetails",
     method: "get",
   });
 }
@@ -155,21 +155,51 @@ const getNetSuiteRMAMapping = async (): Promise<any> => {
   });
 }
 
+const postNetsuiteMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "POST",
+    data: payload
+  });
+}
+
+const syncNetsuiteMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/syncIntegrationTypeMapping",
+    method: "POST",
+    data: { integrationMappingId: payload }
+  });
+}
+
+const deleteIntegrationTypeMappings = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "delete",
+    data: {
+      integrationMappingId: payload.integrationMappingId,
+      integrationTypeId: payload.integrationTypeId
+    }
+  });
+}
+
 export const UserService = {
   checkPermission,
-  getProfile,
-  login,
-  registerUser,
-  uploadNetSuiteCredentials,
-  getNetSuiteDetails,
-  getVerifyLoopWebhook,
-  deleteNetSuiteCredential,
-  uploadLoopCredentials,
-  getLoopDetails,
   deleteLoopCredential,
-  verifyloopCredential,
-  verifyNetsuiteCredential,
+  deleteNetSuiteCredential,
+  deleteIntegrationTypeMappings,
   getAPIKey,
+  getLoopDetails,
+  getNetSuiteDetails,
+  getNetSuiteRMAMapping,
   getNetSuiteRMAMappingList,
-  getNetSuiteRMAMapping
+  getProfile,
+  getVerifyLoopWebhook,
+  login,
+  postNetsuiteMapping,
+  registerUser,
+  syncNetsuiteMapping,
+  uploadLoopCredentials,
+  uploadNetSuiteCredentials,
+  verifyloopCredential,
+  verifyNetsuiteCredential
 }

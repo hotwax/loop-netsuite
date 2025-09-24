@@ -18,7 +18,6 @@
           </ion-segment>
       </ion-toolbar>
     </ion-header>
-   
     <ion-content ref="contentRef" :scroll-events="true" >
       <div v-if="segmentSelected === 'Configuration'">
         <h1>{{ translate("Connect") }}</h1>
@@ -34,11 +33,11 @@
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip :disabled="isChipDisabled('Sandbox' , 'NetSuite')" @click="openNetsuiteModal('Sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox") }}</ion-label></ion-chip>
-                  <ion-chip :disabled="isChipDisabled('Production', 'NetSuite')" @click="openNetsuiteModal('Producation')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Producation") }}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('Production', 'NetSuite')" @click="openNetsuiteModal('Production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production") }}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
               <ion-list>
-                <ion-item v-for="(credentials, index) in nsCredentialsList" :key="index">
+                <ion-item v-for="(credentials, index) in nsCredentialsList" :key="index" :lines="index === nsCredentialsList.length - 1 ? 'none' : ''">
                   <ion-label>
                     {{ credentials.accountType }}
                     <p>{{ credentials.remoteId }}</p>
@@ -72,11 +71,11 @@
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip :disabled="isChipDisabled('Sandbox', 'Loop')" @click="openLoopModal('Sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox")}}</ion-label></ion-chip>
-                  <ion-chip :disabled="isChipDisabled('Production','Loop')" @click="openLoopModal('Producation')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Producation")}}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('Production','Loop')" @click="openLoopModal('Production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production")}}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
               <ion-list>
-                <ion-item v-for="(loopCredentials, index) in loopCredentialsList" :key="index">
+                <ion-item v-for="(loopCredentials, index) in loopCredentialsList" :key="index" :lines="index === loopCredentialsList.length - 1 ? 'none' : ''">
                   <ion-label>
                     {{ loopCredentials.accountType }}
                     <p>{{ loopCredentials.remoteId }}</p>
@@ -97,7 +96,6 @@
             </ion-card>
           </div>
         </section>
-       
         <!-- NetSuite Integration Mapping Section -->
         <section class="ion-padding-horizontal">
           <div>
@@ -107,7 +105,7 @@
                   <ion-card-title>{{ translate("NetSuite Integartion Mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
-                  <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate(credentials.accountType) }}</ion-label></ion-chip>
+                  <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ (credentials.accountType) }}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
             </ion-card>
@@ -121,7 +119,7 @@
                   <ion-card-subtitle>{{ credentials.remoteId }}</ion-card-subtitle>
               </ion-card-header>
               <ion-list v-if="netSuiteMapping[credentials.systemMessageRemoteId] && netSuiteMapping[credentials.systemMessageRemoteId].length > 0">
-                <ion-item lines="none">
+                <ion-item>
                   <ion-label>
                     {{ translate("Mapping Key") }}
                   </ion-label>
@@ -137,111 +135,27 @@
                     </ion-label>
                   </div>
                 </ion-item>
-                <ion-item lines="none">
+                <ion-item v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
                   <ion-label>
-                   <template v-if="mapping.synced === 'Y'">
-                      <ion-note color="success">{{ translate("Synced") }}</ion-note>
-                    </template>
-                    <template v-else-if="mapping.synced === 'N'">
-                      <ion-button color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)" >
-                        {{ translate("Sync") }}
-                      </ion-button>
-                    </template>
-                  </ion-label>
-                </ion-item>
-<!-- 
-                <ion-chip outline>
-                  <ion-label>{{ getFacilityName(count?.facilityId) }}</ion-label>
-                </ion-chip>
-
-                <ion-label>
-                  {{ getCycleCountStats(count.inventoryCountImportId, count.countTypeEnumId === "HARD_COUNT") }}
-                  <p>{{ translate("products counted") }}</p>
-                </ion-label>
-
-                <ion-label>
-                  {{ cycleCountStats(count.inventoryCountImportId)?.rejectedCount || 0 }}
-                  <p>{{ translate("rejected counts") }}</p>
-                </ion-label>
-
-                <ion-label>
-                  {{ cycleCountStats(count.inventoryCountImportId)?.totalVariance || 0 }}
-                  <p>{{ translate("total variance") }}</p>
-                </ion-label>
-
-                <ion-label class="ion-padding">
-                  {{ getClosedDate(count) }}
-                  <p>{{ translate("closed") }}</p>
-                </ion-label> -->
-              <!-- <ion-grid>
-                <ion-row class="ion-text-bold ion-padding-vertical">
-                  <ion-col size="7">
-                    <ion-label>{{ translate("Mapping Key") }}</ion-label>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-label>{{ translate("Value") }}</ion-label>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-label>{{ translate("Status") }}</ion-label>
-                  </ion-col>
-                </ion-row>
-                <ion-row  v-for="(mapping, idx) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="idx" class="ion-align-items-center">
-                  <ion-col size="7">
-                    <ion-label>
-                      <p>{{ mapping.mappingKey }}</p>
-                    </ion-label>
-                  </ion-col>
-
-                  <ion-col size="2">
-                    <ion-note color="success">{{ mapping.mappingValue }}</ion-note>
-                  </ion-col>
-
-                  <ion-col size="2">
-                    <template v-if="mapping.synced === 'Y'">
-                      <ion-note color="success">{{ translate("Synced") }}</ion-note>
-                    </template>
-                    <template v-else-if="mapping.synced === 'N'">
-                      <ion-button color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)" >
-                        {{ translate("Sync") }}
-                      </ion-button>
-                    </template>
-                  </ion-col>
-
-                  <ion-col size="1" class="ion-text-end">
-                    <ion-icon
-                      :icon="trashOutline"
-                      size="large"
-                      aria-hidden="true"
-                      color="medium"
-                      class="pointer"
-                      @click="deleteNetsuiteCredential(credentials)"
-                    ></ion-icon>
-                  </ion-col>
-                </ion-row>
-              </ion-grid> -->
-                <!-- <ion-item v-for="(mapping, idx) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="idx">
-                  <ion-label>
-                    <p>{{ mapping.mappingKey }}</p>
+                    {{ mapping.mappingKey }}
                   </ion-label>
                   <div slot="end" class="item-end">
                     <ion-note color="success">{{ mapping.mappingValue }}</ion-note>
-                    <template v-if="mapping.synced === 'Y'">
+                    <template v-if="mapping.synced == 'Y'">
                       <ion-note color="success">{{ translate("Synced") }}</ion-note>
                     </template>
-                    <template v-else-if="mapping.synced === 'N'">
-                      <ion-button color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
-                        {{ translate("Sync")}}
+                    <template v-else-if="mapping.synced == 'N'">
+                      <ion-button color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
+                        {{ translate("Sync") }}
                       </ion-button>
                     </template>
-                    <ion-icon :icon="trashOutline" size="large" aria-hidden="true" color="medium" class="pointer" @click="deleteNetsuiteCredential(credentials)"></ion-icon>
+                    <ion-icon :icon="trashOutline" size="large" aria-hidden="true" color="medium" class="pointer" @click="deleteIntegrationTypeMappings(mapping)"></ion-icon>
                   </div>
-                </ion-item> -->
+                </ion-item>                 
               </ion-list>
             </ion-card>
           </div>
         </section>
-        
-        
       </div>
       <div v-if="segmentSelected === 'account'">
       </div>
@@ -328,11 +242,11 @@ async function openNetsuiteModal(accountType: string ) {
       const response = await store.dispatch('user/netSuiteCredentials', data);
       if (response) {
         fetchUserNetSuiteDetails()
+        showToast(translate("NetSuite credentials saved successfully."));
       }
-      showToast(translate("NetSuite credentials saved successfully."));
     } catch (error) {
       logger.error(error);
-      showToast("Failed to save NetSuite credentials.");
+      showToast(translate("Failed to save NetSuite credentials."));
     }
   }
 }
@@ -345,18 +259,16 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
   });
   modal.present();
   const { data, role } = await modal.onWillDismiss();
-  console.log("data, role---", data);
-  
   if (role === 'save') {
     try {
-      const response = await store.dispatch('user/netSuiteCredentials', data);
+      const response = await store.dispatch('user/netsuiteMapping', data);
       if (response) {
-        fetchUserNetSuiteDetails()
+        getNetSuiteRMAMapping()
+        showToast(translate("NetSuite Mapping saved successfully."));
       }
-      showToast(translate("NetSuite credentials saved successfully."));
     } catch (error) {
       logger.error(error);
-      showToast("Failed to save NetSuite credentials.");
+      showToast(translate("Failed to save NetSuite Mapping."));
     }
   }
 } 
@@ -364,16 +276,12 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
 async function getNetSuiteRMAMapping() {
   try {
     const response = await store.dispatch('user/getNetSuiteRMAMapping');
-    if (!response) {
-      showToast("Unable to fetch NetSuite RMA Mapping");
-    } else {
+    if (response) {
       netSuiteMapping.value = response.integrationTypeMappingMap
-      console.log("netSuiteMapping---", response);
-      
     }
   } catch (error) {
     logger.error(error);
-    showToast("Unable to fetch NetSuite RMA Mapping List");
+    showToast(translate("Unable to fetch NetSuite RMA Mapping List."));
   }
 }
 
@@ -389,11 +297,11 @@ async function openLoopModal(accountType: string ) {
       const response = await store.dispatch('user/loopCredentials', data);
       if (response) {
         fetchUserLoopDetails()
+        showToast(translate("Loop credentials saved successfully."));
       }
-        showToast("NetSuite credentials saved successfully.");
       } catch (error) {
         logger.error(error);
-        showToast("Failed to save NetSuite credentials.");
+        showToast(translate("Failed to save Loop credentials."));
       }
     }
 }
@@ -404,7 +312,7 @@ async function fetchUserProfile() {
     profile.value = response.data.organizationDetailList[0];
   } catch (error) {
     logger.error(error);
-    showToast("Failed to fetch user profile.");
+    showToast(translate("Failed to fetch user profile."));
   }
 }
 
@@ -416,7 +324,7 @@ async function fetchUserNetSuiteDetails() {
     } 
   } catch (error) {
     logger.error(error);
-    showToast("Failed to fetch user profile.");
+    showToast(translate("Failed to fetch netsuite user details."));
   }
 }
 
@@ -425,11 +333,11 @@ async function deleteNetsuiteCredential(data: any) {
     const response = await store.dispatch('user/deleteNetSuiteCredential', data);
     if (response) {
       nsCredentialsList.value = nsCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
-      showToast("NetSuite credential deleted successfully.");
+      showToast(translate("NetSuite credential deleted successfully."));
     }
   } catch (error) {
     logger.error(error);
-    showToast("Failed to fetch user profile.");
+    showToast(translate("Failed to delete NetSuite credential."));
   }
 }
 
@@ -449,7 +357,7 @@ async function fetchUserLoopDetails() {
     } 
   } catch (error) {
     logger.error(error);
-    showToast("Failed to fetch user profile.");
+    showToast(translate("Failed to fetch loop user details."));
   }
 }
 
@@ -458,11 +366,11 @@ async function deleteLoopCredential(data: any) {
     const response = await store.dispatch('user/deleteLoopCredential', data);
     if (response) {
       loopCredentialsList.value = loopCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
-      showToast("NetSuite credential deleted successfully.");
+      showToast(translate("Loop credential deleted successfully."));
     }
   } catch (error) {
     logger.error(error);
-    showToast("Failed to fetch user profile.");
+    showToast(translate("Failed to deleted Loop credential."));
   }
 }
 
@@ -471,13 +379,37 @@ async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
     const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
     if (response) {
       fetchUserNetSuiteDetails()
-
-    } else {
-      showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
-    }
+      showToast(translate("Verify NetSuite Credential successfully."));
+    } 
   } catch (error) {
     logger.error(error);
-    showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+    showToast(translate("Unable to verify NetSuite Credential Please try again either delete the credential and add it again."));
+  }
+}
+
+async function syncNetsuiteMapping(systemMessageRemoteId: string) {
+  try {
+    const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
+    if (response) {
+      getNetSuiteRMAMapping()
+      showToast(translate("NetSuite Mapping Sync successfully."));
+    } 
+  } catch (error) {
+    logger.error(error);
+    showToast(translate("Unable to sync NetSuite Mapping Please try again."));
+  }
+}
+
+async function deleteIntegrationTypeMappings(payload: any) {
+  try {
+    const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
+    if (response) {
+      getNetSuiteRMAMapping()
+      showToast(translate("NetSuite Mapping Deleted successfully."));
+    } 
+  } catch (error) {
+    logger.error(error);
+    showToast(translate("Unable to delete NetSuite Mapping Please try again."));
   }
 }
 
@@ -486,26 +418,23 @@ async function verifyloopCredential(loopCredentials: any) {
     const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
     if (response) {
       fetchUserLoopDetails()
-    } else {
-      showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+      showToast(translate("Verify Loop Credential successfully."));
     }
   } catch (error) {
     logger.error(error);
-    showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+    showToast(translate("Unable to verify Loop Credential Please try again either delete the credential and add it again."));
   }
 }
 
 async function getVerifyLoopWebhook() {
   try {
     const response = await store.dispatch('user/getVerifyLoopWebhook');
-    if (!response) {
-      showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
-    }  else {
+    if (response) {
       loopWebhookVerified.value = response
     }
   } catch (error) {
     logger.error(error);
-    showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+    showToast(translate("Unable to verify loop webhook subscribe Please try again either delete the credential and add it again."));
   }
 }
 
@@ -530,11 +459,11 @@ async function getAPIKey(credentials: any) {
       });
       await alert.present();
     } else {
-      showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+      showToast(translate("Unable to get NetSuite apiKey Please try again."));
     }
   } catch (error) {
     logger.error(error);
-    showToast("Unable to verify NetSuite Credential Please try again either delete the credential and add it again.");
+    showToast(translate("Unable to get NetSuite apiKey Please try again."));
   }
 }
  

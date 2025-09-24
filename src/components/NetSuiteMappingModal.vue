@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{accountType == "Sandbox" ? "Add NetSuite Sandbox RMA Mapping" : "Add NetSuite Production RMA Mapping" }}</ion-title>
+      <ion-title color="dark">{{ translate(accountType == "Sandbox" ? "Add NetSuite Sandbox RMA Mapping" : "Add NetSuite Production RMA Mapping") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding-top">
@@ -16,7 +16,7 @@
       </ion-select>
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(('NetSuite Mapping Value'))" v-model="netsuiteRmaMap.mappingValue" type="text" required />
+      <ion-input  label-placement="floating" :label="(translate('NetSuite Mapping Value'))" v-model="netsuiteRmaMap.mappingValue" type="number" required />
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">
@@ -30,6 +30,7 @@
 import logger from '@/logger';
 import store from '@/store';
 import { showToast } from '@/utils';
+import { translate } from '@/i18n';
 import {
   IonContent,
   IonHeader,
@@ -51,8 +52,6 @@ import { defineProps, onMounted, ref } from 'vue';
 
 const props = defineProps(["accountType", "systemMessageRemoteId"]);
 
-
-
 const accountType = props.accountType as string;
 const systemMessageRemoteId = props.systemMessageRemoteId as any;
 const netSuiteMappinglist = ref([]);
@@ -70,13 +69,11 @@ async function getNetSuiteRMAMappingList() {
   try {
     const response = await store.dispatch('user/getNetSuiteRMAMappingList');
     if (!response) {
-      showToast("Unable to fetch NetSuite RMA Mapping List");
-    } else {
       netSuiteMappinglist.value = response.enumList
     }
   } catch (error) {
     logger.error(error);
-    showToast("Unable to fetch NetSuite RMA Mapping List");
+    showToast(translate("Unable to fetch NetSuite RMA Mapping List"));
   }
 }
 
