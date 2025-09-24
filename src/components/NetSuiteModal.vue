@@ -40,18 +40,18 @@
 <script setup lang="ts">
 import { translate } from '@/i18n';
 import {
+  IonButton,
+  IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
   IonTitle,
   IonToolbar,
-  IonButtons,
-  IonButton,
-  IonItem,
-  IonInput,
-  IonIcon,
-  IonFab,
-  IonFabButton, 
-  IonLabel,
   modalController,
 } from '@ionic/vue';
 import { closeOutline, saveOutline, cloudUploadOutline } from 'ionicons/icons';

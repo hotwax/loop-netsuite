@@ -27,17 +27,17 @@
 <script setup lang="ts">
 import { translate } from '@/i18n';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
   IonButton,
-  IonItem,
-  IonInput,
-  IonIcon,
+  IonButtons,
+  IonContent,
   IonFab,
   IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonTitle,
+  IonToolbar,
   modalController,
 } from '@ionic/vue';
 import { closeOutline, saveOutline } from 'ionicons/icons';

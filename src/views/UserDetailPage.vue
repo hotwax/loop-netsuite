@@ -167,10 +167,12 @@
 
 <script setup lang="ts">
 import {
+  alertController,
+  IonButton,
   IonCard,
   IonCardHeader,
-  IonCardTitle,
   IonCardSubtitle,
+  IonCardTitle,
   IonChip,
   IonContent,
   IonHeader,
@@ -178,16 +180,14 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonPage,
   IonSegment,
   IonSegmentButton,
   IonThumbnail,
   IonToolbar,
-  IonButton,
-  IonNote,
   modalController,
-  onIonViewDidEnter,
-  alertController
+  onIonViewDidEnter
 } from "@ionic/vue";
 
 import { ref } from "vue";

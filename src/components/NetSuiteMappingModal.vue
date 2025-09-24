@@ -32,19 +32,19 @@ import store from '@/store';
 import { showToast } from '@/utils';
 import { translate } from '@/i18n';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
   IonButton,
-  IonItem,
-  IonInput,
-  IonIcon,
+  IonButtons,
+  IonContent,
   IonFab,
   IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
   IonSelect,
   IonSelectOption,
+  IonTitle,
+  IonToolbar,
   modalController,
 } from '@ionic/vue';
 import { closeOutline, saveOutline } from 'ionicons/icons';
