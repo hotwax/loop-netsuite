@@ -5,7 +5,7 @@ import UserState from './UserState'
 import * as types from './mutation-types'
 import { showToast } from '@/utils'
 import i18n from '@/i18n'
-import { updateToken } from '@/adapter'
+import { hasError, updateToken } from '@/adapter'
 import logger from '@/logger'
 import { translate } from "@hotwax/dxp-components";
 
@@ -208,6 +208,26 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const resp = await UserService.getNetSuiteRMAMapping()
       if (resp.status === 200 && resp.data) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async updateUserProfile({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.updateUserProfile(payload)
+      if (!hasError(resp)) {
+        return resp.data;
+      }
+    } catch (err) {
+      logger.error(err)
+    }
+  },
+  async updatePassword({ commit, dispatch }, payload) {
+    try {
+      const resp = await UserService.updateUserProfile(payload)
+      if (!hasError(resp)) {
         return resp.data;
       }
     } catch (err) {
