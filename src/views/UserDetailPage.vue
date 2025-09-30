@@ -196,7 +196,6 @@ import { copyToClipboard, showToast } from "@/utils";
 import { addOutline, trashOutline } from "ionicons/icons";
 import NetSuiteModal from "@/components/NetSuiteModal.vue";
 import LoopModal from "@/components/LoopModal.vue";
-import logger from '@/logger';
 import { translate } from '@/i18n';
 import NetSuiteMappingModal from "@/components/NetSuiteMappingModal.vue";
 
@@ -238,15 +237,10 @@ async function openNetsuiteModal(accountType: string ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    try {
-      const response = await store.dispatch('user/netSuiteCredentials', data);
-      if (response) {
-        fetchUserNetSuiteDetails()
-        showToast(translate("NetSuite credentials saved successfully."));
-      }
-    } catch (error) {
-      logger.error(error);
-      showToast(translate("Failed to save NetSuite credentials."));
+    const response = await store.dispatch('user/netSuiteCredentials', data);
+    if (response) {
+      fetchUserNetSuiteDetails()
+      showToast(translate("NetSuite credentials saved successfully."));
     }
   }
 }
@@ -260,84 +254,54 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    try {
-      const response = await store.dispatch('user/netsuiteMapping', data);
-      if (response) {
-        getNetSuiteRMAMapping()
-        showToast(translate("NetSuite Mapping saved successfully."));
-      }
-    } catch (error) {
-      logger.error(error);
-      showToast(translate("Failed to save NetSuite Mapping."));
+    const response = await store.dispatch('user/netsuiteMapping', data);
+    if (response) {
+      getNetSuiteRMAMapping()
+      showToast(translate("NetSuite Mapping saved successfully."));
     }
   }
 } 
 
 async function getNetSuiteRMAMapping() {
-  try {
-    const response = await store.dispatch('user/getNetSuiteRMAMapping');
-    if (response) {
-      netSuiteMapping.value = response.integrationTypeMappingMap
-    }
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to fetch NetSuite RMA Mapping List."));
+  const response = await store.dispatch('user/getNetSuiteRMAMapping');
+  if (response) {
+    netSuiteMapping.value = response.integrationTypeMappingMap
   }
 }
 
 async function openLoopModal(accountType: string ) {
   const modal = await modalController.create({
-      component: LoopModal,
-      componentProps: { accountType },
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    if (role === 'save') {
-      try {
-      const response = await store.dispatch('user/loopCredentials', data);
-      if (response) {
-        fetchUserLoopDetails()
-        showToast(translate("Loop credentials saved successfully."));
-      }
-      } catch (error) {
-        logger.error(error);
-        showToast(translate("Failed to save Loop credentials."));
-      }
+    component: LoopModal,
+    componentProps: { accountType },
+  });
+  modal.present();
+  const { data, role } = await modal.onWillDismiss();
+  if (role === 'save') {
+    const response = await store.dispatch('user/loopCredentials', data);
+    if (response) {
+      fetchUserLoopDetails()
+      showToast(translate("Loop credentials saved successfully."));
     }
+  }
 }
 
 async function fetchUserProfile() {
-  try {
-    const response = await store.dispatch('user/getProfile');
-    profile.value = response.data.organizationDetailList[0];
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Failed to fetch user profile."));
-  }
+  const response = await store.dispatch('user/getProfile');
+  profile.value = response.data.organizationDetailList[0];
 }
 
 async function fetchUserNetSuiteDetails() {
-  try {
-    const response = await store.dispatch('user/getNetSuiteDetails');
-    if (response) {
-      nsCredentialsList.value = response.netsuiteRemoteList;
-    } 
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Failed to fetch netsuite user details."));
-  }
+  const response = await store.dispatch('user/getNetSuiteDetails');
+  if (response) {
+    nsCredentialsList.value = response.netsuiteRemoteList;
+  } 
 }
 
 async function deleteNetsuiteCredential(data: any) {
-  try {
-    const response = await store.dispatch('user/deleteNetSuiteCredential', data);
-    if (response) {
-      nsCredentialsList.value = nsCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
-      showToast(translate("NetSuite credential deleted successfully."));
-    }
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Failed to delete NetSuite credential."));
+  const response = await store.dispatch('user/deleteNetSuiteCredential', data);
+  if (response) {
+    nsCredentialsList.value = nsCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
+    showToast(translate("NetSuite credential deleted successfully."));
   }
 }
 
@@ -350,119 +314,79 @@ const isChipDisabled = (type: string, cardType : string) => {
 }; 
 
 async function fetchUserLoopDetails() {
-  try {
-    const response = await store.dispatch('user/getLoopDetails');
-    if (response) {
-      loopCredentialsList.value = response.loopRemoteList;
-    } 
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Failed to fetch loop user details."));
-  }
+  const response = await store.dispatch('user/getLoopDetails');
+  if (response) {
+    loopCredentialsList.value = response.loopRemoteList;
+  } 
 }
 
 async function deleteLoopCredential(data: any) {
-  try {
-    const response = await store.dispatch('user/deleteLoopCredential', data);
-    if (response) {
-      loopCredentialsList.value = loopCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
-      showToast(translate("Loop credential deleted successfully."));
-    }
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Failed to deleted Loop credential."));
+  const response = await store.dispatch('user/deleteLoopCredential', data);
+  if (response) {
+    loopCredentialsList.value = loopCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
+    showToast(translate("Loop credential deleted successfully."));
   }
 }
 
 async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
-  try {
-    const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
-    if (response) {
-      fetchUserNetSuiteDetails()
-      showToast(translate("Verify NetSuite Credential successfully."));
-    } 
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to verify NetSuite Credential Please try again either delete the credential and add it again."));
-  }
+  const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
+  if (response) {
+    fetchUserNetSuiteDetails()
+    showToast(translate("Verify NetSuite Credential successfully."));
+  } 
 }
 
 async function syncNetsuiteMapping(systemMessageRemoteId: string) {
-  try {
-    const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
-    if (response) {
-      getNetSuiteRMAMapping()
-      showToast(translate("NetSuite Mapping Sync successfully."));
-    } 
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to sync NetSuite Mapping Please try again."));
-  }
+  const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
+  if (response) {
+    getNetSuiteRMAMapping()
+    showToast(translate("NetSuite Mapping Sync successfully."));
+  } 
 }
 
 async function deleteIntegrationTypeMappings(payload: any) {
-  try {
-    const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
-    if (response) {
-      getNetSuiteRMAMapping()
-      showToast(translate("NetSuite Mapping Deleted successfully."));
-    } 
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to delete NetSuite Mapping Please try again."));
-  }
+  const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
+  if (response) {
+    getNetSuiteRMAMapping()
+    showToast(translate("NetSuite Mapping Deleted successfully."));
+  } 
 }
 
 async function verifyloopCredential(loopCredentials: any) {
-  try {
-    const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
-    if (response) {
-      fetchUserLoopDetails()
-      showToast(translate("Verify Loop Credential successfully."));
-    }
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to verify Loop Credential Please try again either delete the credential and add it again."));
+  const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
+  if (response) {
+    fetchUserLoopDetails()
+    showToast(translate("Verify Loop Credential successfully."));
   }
 }
 
 async function getVerifyLoopWebhook() {
-  try {
-    const response = await store.dispatch('user/getVerifyLoopWebhook');
-    if (response) {
-      loopWebhookVerified.value = response
-    }
-  } catch (error) {
-    logger.error(error);
-    showToast(translate("Unable to verify loop webhook subscribe Please try again either delete the credential and add it again."));
+  const response = await store.dispatch('user/getVerifyLoopWebhook');
+  if (response) {
+    loopWebhookVerified.value = response
   }
 }
 
 async function getAPIKey(credentials: any) {
-  try {
-    const response = await store.dispatch('user/getAPIKey', credentials);
-    if (response) {
-      const alert = await alertController.create({
-        header: 'Refresh API Key',
-        subHeader: `An API Key has been generated for NetSuite Account ID ${credentials.remoteId}.
-                    Please copy and save this key now — it will only be shown once.<br/>
-                    Use this key to create an API Secret record in NetSuite.<br />
+  const response = await store.dispatch('user/getAPIKey', credentials);
+  if (response) {
+    const alert = await alertController.create({
+      header: 'Refresh API Key',
+      subHeader: `An API Key has been generated for NetSuite Account ID ${credentials.remoteId}.
+                  Please copy and save this key now — it will only be shown once.<br/>
+                  Use this key to create an API Secret record in NetSuite.<br />
 
-                    Your API Key is: ${response.loginKey}`,
-        buttons: [
-          {
-            text: 'copy API Key',
-            role: 'copy',
-            handler: () => copyToClipboard(response?.loginKey)
-          },
-        ]
-      });
-      await alert.present();
-    } else {
-      showToast(translate("Unable to get NetSuite apiKey Please try again."));
-    }
-  } catch (error) {
-    logger.error(error);
+                  Your API Key is: ${response.loginKey}`,
+      buttons: [
+        {
+          text: 'copy API Key',
+          role: 'copy',
+          handler: () => copyToClipboard(response?.loginKey)
+        },
+      ]
+    });
+    await alert.present();
+  } else {
     showToast(translate("Unable to get NetSuite apiKey Please try again."));
   }
 }

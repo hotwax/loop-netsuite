@@ -6,15 +6,15 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(accountType == "Sandbox" ? "Add Loop Sandbox" : "Add Loop Production") }}</ion-title>
+      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add Loop Sandbox" : "Add Loop Production") }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding-top">
+  <ion-content>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(translate('Access Key'))" v-model="loopDetails.privateKey" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('Access Key')" v-model="loopDetails.privateKey" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="(translate('Webhook Secret'))" v-model="loopDetails.sendSharedSecret" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('Webhook Secret')" v-model="loopDetails.sendSharedSecret" type="text" required />
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">
@@ -45,11 +45,10 @@ import { defineProps, ref } from 'vue';
 
 const props = defineProps(["accountType"]);
 
-const accountType = props.accountType as string;
 const loopDetails = ref({
   privateKey: '',
   sendSharedSecret: '',
-  accountType: accountType === 'Sandbox' ? 'Sandbox' : 'Production'
+  accountType: props.accountType === 'Sandbox' ? 'Sandbox' : 'Production'
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
