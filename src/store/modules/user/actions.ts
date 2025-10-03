@@ -66,7 +66,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Failed to fetch netsuite user details."));
+      showToast(translate("Failed to fetch NetSuite user details."));
     }
   },
   async register({ commit, dispatch }, payload) {
@@ -105,7 +105,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to add NetSuite RMA Mapping List."));
+      showToast(translate("Unable to add NetSuite RMA mapping List."));
     }
   },
   async syncNetsuiteMapping({ commit, dispatch }, payload) {
@@ -118,7 +118,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast("Unable to sync NetSuite Mapping Please try again.");
+      showToast("Unable to sync NetSuite mapping. Please try again.");
     }
   },
   async deleteIntegrationTypeMappings({ commit, dispatch }, payload) {
@@ -131,7 +131,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to delete NetSuite Mapping Please try again."));
+      showToast(translate("Unable to delete NetSuite mapping. Please try again."));
     }
   },
   async deleteNetSuiteCredential({ commit, dispatch }, payload) {
@@ -170,7 +170,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Failed to fetch loop user details."));
+      showToast(translate("Failed to fetch Loop user details."));
     }
   },
   async deleteLoopCredential({ commit, dispatch }, payload) {
@@ -183,7 +183,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Failed to deleted Loop credential."));
+      showToast(translate("Failed to delete Loop credential."));
     }
   },
   async verifyNetsuiteCredential({ commit, dispatch }, payload) {
@@ -196,7 +196,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to verify NetSuite Credential Please try again either delete the credential and add it again."));
+      showToast(translate("Unable to verify NetSuite Credential. Please try again either delete the credential and add it again."));
     }
   },
   async verifyloopCredential({ commit, dispatch }, payload) {
@@ -209,7 +209,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to verify Loop Credential Please try again either delete the credential and add it again."));
+      showToast(translate("Unable to verify Loop Credential. Please try again either delete the credential and add it again."));
     }
   },
   async getVerifyLoopWebhook({ commit, dispatch }) {
@@ -222,7 +222,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to verify loop webhook subscribe Please try again either delete the credential and add it again."));
+      showToast(translate("Unable to verify Loop webhook subscribe. Please try again either delete the credential and add it again."));
     }
   },
   async getAPIKey({ commit, dispatch }, payload) {
@@ -235,7 +235,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to get NetSuite apiKey Please try again."));
+      showToast(translate("Unable to get NetSuite apiKey. Please try again."));
     }
   },
   async getNetSuiteRMATypeMapping({ commit, dispatch }) {
@@ -248,7 +248,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to fetch NetSuite RMA Type Mapping."));
+      showToast(translate("Unable to fetch NetSuite RMA type mapping."));
     }
   },
   async getNetSuiteRMAMapping({ commit, dispatch }) {
@@ -261,7 +261,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to fetch NetSuite RMA Mapping List."));
+      showToast(translate("Unable to fetch NetSuite RMA mapping List."));
     }
   },
 }

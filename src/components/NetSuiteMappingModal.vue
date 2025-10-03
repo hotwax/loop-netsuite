@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox RMA Mapping" : "Add NetSuite Production RMA Mapping") }}</ion-title>
+      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox RMA mapping" : "Add NetSuite Production RMA mapping") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
@@ -16,7 +16,7 @@
       </ion-select>
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="translate('NetSuite Mapping Value')" v-model="netsuiteRmaMap.mappingValue" type="number" required />
+      <ion-input  label-placement="floating" :label="translate('NetSuite mapping values')" v-model="netsuiteRmaMap.mappingValue" type="number" required />
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">

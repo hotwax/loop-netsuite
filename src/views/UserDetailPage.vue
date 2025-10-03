@@ -47,7 +47,7 @@
                         {{ translate("Generate API Key")}}
                       </ion-button>
                     <template v-if="credentials.verified === 'Y'">
-                      <ion-note color="success">{{ translate("verified") }}</ion-note>
+                      <ion-note color="success">{{ translate("Verified") }}</ion-note>
                     </template>
                     <template v-else-if="credentials.verified === 'N'">
                       <ion-button color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
@@ -102,7 +102,7 @@
             <ion-card>
               <ion-card-header>
                 <ion-item lines="none">
-                  <ion-card-title>{{ translate("NetSuite Integartion Mapping") }}</ion-card-title>
+                  <ion-card-title>{{ translate("NetSuite Integration mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ (credentials.accountType) }}</ion-label></ion-chip>
@@ -340,7 +340,7 @@ async function syncNetsuiteMapping(systemMessageRemoteId: string) {
   const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
   if (response) {
     getNetSuiteRMAMapping()
-    showToast(translate("NetSuite Mapping Sync successfully."));
+    showToast(translate("NetSuite mapping synced successfully."));
   } 
 }
 
@@ -348,7 +348,7 @@ async function deleteIntegrationTypeMappings(payload: any) {
   const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
   if (response) {
     getNetSuiteRMAMapping()
-    showToast(translate("NetSuite Mapping Deleted successfully."));
+    showToast(translate("NetSuite mapping deleted successfully."));
   } 
 }
 
@@ -387,7 +387,7 @@ async function getAPIKey(credentials: any) {
     });
     await alert.present();
   } else {
-    showToast(translate("Unable to get NetSuite apiKey Please try again."));
+    showToast(translate("Unable to get NetSuite apiKey. Please try again."));
   }
 }
  

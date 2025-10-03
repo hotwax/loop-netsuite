@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox Credentials" : "Add NetSuite Production Credentials") }}</ion-title>
+      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox credentials" : "Add NetSuite Production credentials") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
