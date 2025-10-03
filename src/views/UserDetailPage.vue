@@ -32,8 +32,8 @@
                   <ion-card-title>{{ translate("NetSuite Credentials") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
-                  <ion-chip :disabled="isChipDisabled('Sandbox' , 'NetSuite')" @click="openNetsuiteModal('Sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox") }}</ion-label></ion-chip>
-                  <ion-chip :disabled="isChipDisabled('Production', 'NetSuite')" @click="openNetsuiteModal('Production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production") }}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('sandbox' , 'NetSuite')" @click="openNetsuiteModal('sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox") }}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('production', 'NetSuite')" @click="openNetsuiteModal('production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production") }}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
               <ion-list>
@@ -70,8 +70,8 @@
                   <ion-card-title>{{ translate("Loop Credentials") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
-                  <ion-chip :disabled="isChipDisabled('Sandbox', 'Loop')" @click="openLoopModal('Sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox")}}</ion-label></ion-chip>
-                  <ion-chip :disabled="isChipDisabled('Production','Loop')" @click="openLoopModal('Production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production")}}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('sandbox', 'Loop')" @click="openLoopModal('sandbox')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Sandbox")}}</ion-label></ion-chip>
+                  <ion-chip :disabled="isChipDisabled('production','Loop')" @click="openLoopModal('production')" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ translate("Production")}}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
               <ion-list>
@@ -105,7 +105,7 @@
                   <ion-card-title>{{ translate("NetSuite Integration mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
-                  <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ (credentials.accountType) }}</ion-label></ion-chip>
+                  <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true"><ion-icon :icon=addOutline /> <ion-label>{{ (credentials.accountType == "sandbox" ? "Sandbox" : "Production") }}</ion-label></ion-chip>
                 </ion-item>
               </ion-card-header>
             </ion-card>

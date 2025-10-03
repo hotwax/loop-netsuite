@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox RMA mapping" : "Add NetSuite Production RMA mapping") }}</ion-title>
+      <ion-title color="dark">{{ translate(props.accountType == "sandbox" ? "Add NetSuite Sandbox RMA mapping" : "Add NetSuite Production RMA mapping") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>

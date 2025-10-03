@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(props.accountType == "Sandbox" ? "Add NetSuite Sandbox credentials" : "Add NetSuite Production credentials") }}</ion-title>
+      <ion-title color="dark">{{ translate(props.accountType == "sandbox" ? "Add NetSuite Sandbox credentials" : "Add NetSuite Production credentials") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
@@ -64,7 +64,7 @@ const netSuiteDetails = ref({
   sharedSecret: '',
   sendSharedSecret: '',
   sshKey: '',
-  accountType: props.accountType === 'Sandbox' ? 'Sandbox' : 'Production'
+  accountType: props.accountType
 });
     
 const uploadPemFile = async (event: any) => {
