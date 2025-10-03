@@ -226,7 +226,7 @@ const actions: ActionTree<UserState, RootState> = {
   },
   async updatePassword({ commit, dispatch }, payload) {
     try {
-      const resp = await UserService.updateUserProfile(payload)
+      const resp = await UserService.updatePassword(payload)
       if (!hasError(resp)) {
         return resp.data;
       }
