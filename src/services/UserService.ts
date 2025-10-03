@@ -141,7 +141,7 @@ const getAPIKey = async (payload: any): Promise<any> => {
   });
 }
 
-const getNetSuiteRMAMappingList = async (): Promise<any> => {
+const getNetSuiteRMATypeMapping = async (): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/organizations/returnIntegrationTypeMapping",
     method: "get",
@@ -207,7 +207,7 @@ export const UserService = {
   getLoopDetails,
   getNetSuiteDetails,
   getNetSuiteRMAMapping,
-  getNetSuiteRMAMappingList,
+  getNetSuiteRMATypeMapping,
   getProfile,
   getVerifyLoopWebhook,
   login,
