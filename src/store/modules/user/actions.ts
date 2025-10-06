@@ -4,7 +4,7 @@ import RootState from '@/store/RootState'
 import UserState from './UserState'
 import * as types from './mutation-types'
 import { showToast } from '@/utils'
-import { hasError, hasError, updateToken } from '@/adapter'
+import { hasError, updateToken } from '@/adapter'
 import logger from '@/logger'
 import i18n, { translate } from '@/i18n'
 
@@ -269,9 +269,12 @@ const actions: ActionTree<UserState, RootState> = {
       const resp = await UserService.updateUserProfile(payload)
       if (!hasError(resp)) {
         return resp.data;
+      } else {
+        throw resp.data
       }
     } catch (err) {
       logger.error(err)
+      showToast(translate("Failed to update user profile."));
     }
   },
   async updatePassword({ commit, dispatch }, payload) {
@@ -284,27 +287,7 @@ const actions: ActionTree<UserState, RootState> = {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Unable to fetch NetSuite RMA mapping List."));
-    }
-  },
-  async updateUserProfile({ commit, dispatch }, payload) {
-    try {
-      const resp = await UserService.updateUserProfile(payload)
-      if (!hasError(resp)) {
-        return resp.data;
-      }
-    } catch (err) {
-      logger.error(err)
-    }
-  },
-  async updatePassword({ commit, dispatch }, payload) {
-    try {
-      const resp = await UserService.updatePassword(payload)
-      if (!hasError(resp)) {
-        return resp.data;
-      }
-    } catch (err) {
-      logger.error(err)
+      showToast(translate("Failed to update password."));
     }
   },
 }

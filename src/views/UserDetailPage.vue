@@ -442,15 +442,10 @@ async function updateProfile(profile: any ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    try {
-      const response = await store.dispatch('user/updateUserProfile', data);
-      if (response) {
-        fetchUserProfile()
-        showToast(translate("User Profile Updated saved successfully."));
-      }
-    } catch (error) {
-      logger.error(error);
-      showToast(translate("Failed to update user profile."));
+    const response = await store.dispatch('user/updateUserProfile', data);
+    if (response) {
+      fetchUserProfile()
+      showToast(translate("User Profile Updated saved successfully."));
     }
   }
 } 
@@ -469,15 +464,10 @@ async function updatePassword(profile: any ) {
     return;
   }
   if (role === 'save') {
-    try {
-      const response = await store.dispatch('user/updatePassword', data);
-      if (response) {
-        fetchUserProfile()
-        showToast(translate("New Password Updated Successfully."));
-      }
-    } catch (error) {
-      logger.error(error);
-      showToast(translate("Failed to update password."));
+    const response = await store.dispatch('user/updatePassword', data);
+    if (response) {
+      fetchUserProfile()
+      showToast(translate("New Password Updated Successfully."));
     }
   }
 }
