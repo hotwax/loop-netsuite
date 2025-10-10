@@ -44,22 +44,22 @@
               </ion-card-header>
               <ion-list>
                 <ion-item v-for="(credentials, index) in nsCredentialsList" :key="index" :lines="index === nsCredentialsList.length - 1 ? 'none' : ''">
-                  <ion-label>
-                    {{ translate(credentials.accountType) }}
-                    <p>{{ credentials.remoteId }}</p>
-                  </ion-label>
-                  <div slot="end" class="item-end">
-                    <ion-button fill="outline" size="small" @click="getAPIKey(credentials)">
+                  <div class="item-grid">
+                    <ion-label>
+                      {{ translate(credentials.accountType) }}
+                      <p>{{ credentials.remoteId }}</p>
+                    </ion-label>
+                    <ion-button class="ion-text-center ion-text-nowrap" fill="outline" size="small" @click="getAPIKey(credentials)">
                       {{ translate("Generate API Key")}}
                     </ion-button>
-                    <ion-note v-if="credentials.verified === 'Y'" color="success">
+                    <ion-note class="ion-text-center" v-if="credentials.verified === 'Y'" color="success">
                       {{ translate("Verified") }}
                     </ion-note>
-                    <ion-button v-else-if="credentials.verified === 'N'" color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
+                    <ion-button class="ion-text-center" v-else-if="credentials.verified === 'N'" color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
                       {{ translate("Verify")}}
                     </ion-button>
-                    <ion-button fill="clear" @click="deleteNetsuiteCredential(credentials)">
-                      <ion-icon :icon="trashOutline" size="large" color="medium" ></ion-icon>
+                    <ion-button class="ion-text-center" size="default" fill="clear" @click="deleteNetsuiteCredential(credentials)">
+                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium" ></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
@@ -88,19 +88,19 @@
               </ion-card-header>
               <ion-list>
                 <ion-item v-for="(loopCredentials, index) in loopCredentialsList" :key="index" :lines="index === loopCredentialsList.length - 1 ? 'none' : ''">
-                  <ion-label>
-                    {{ translate(loopCredentials.accountType) }}
-                    <p>{{ loopCredentials.remoteId }}</p>
-                  </ion-label>
-                  <div slot="end" class="item-end">
-                    <ion-note v-if="loopCredentials.verified === 'Y'" color="success">
+                  <div class="item-grid-loop">
+                    <ion-label>
+                      {{ translate(loopCredentials.accountType) }}
+                      <p>{{ loopCredentials.remoteId }}</p>
+                    </ion-label>
+                    <ion-note class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="success">
                       {{ translate("Active") }}
                     </ion-note>
-                    <ion-button v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
+                    <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
                       {{ translate("Subscribe") }}
                     </ion-button>
-                    <ion-button fill="clear" @click="deleteLoopCredential(loopCredentials)">
-                      <ion-icon :icon="trashOutline" color="medium" ></ion-icon>
+                    <ion-button class="ion-text-center" fill="clear" size="default" @click="deleteLoopCredential(loopCredentials)">
+                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium" ></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
@@ -135,36 +135,28 @@
               </ion-card-header>
               <ion-list v-if="netSuiteMapping[credentials.systemMessageRemoteId] && netSuiteMapping[credentials.systemMessageRemoteId].length > 0">
                 <ion-item>
-                  <ion-label>
-                    {{ translate("Mapping Key") }}
-                  </ion-label>
-                  <div slot="end" class="item-end">
-                    <ion-label>
-                      {{ translate("Value") }}
-                    </ion-label>
-                    <ion-label>
-                      {{ translate("Status") }}
-                    </ion-label>
-                    <ion-label>
-                      {{ translate("Action") }}
-                    </ion-label>
+                  <div class="item-grid">
+                    <ion-label> {{ translate("Mapping Key") }}</ion-label>
+                    <ion-label class="ion-text-center"> {{ translate("Value") }}</ion-label>
+                    <ion-label class="ion-text-center"> {{ translate("Status") }}</ion-label>
+                    <ion-label class="ion-text-center"> {{ translate("Action") }} </ion-label>
                   </div>
                 </ion-item>
-                <ion-item v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
-                  <ion-label>
-                    {{ mapping.mappingKey }}
-                  </ion-label>
-                  <div slot="end" class="item-end">
-                    <ion-note color="success">{{ mapping.mappingValue }}</ion-note>
-                    <ion-note v-if="mapping.synced == 'Y'" color="success">{{ translate("Synced") }}</ion-note>
-                    <ion-button v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
+                <ion-item  v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
+                  <div class="item-grid">
+                    <ion-label>
+                      {{ mapping.mappingKey }}
+                    </ion-label>
+                    <ion-label class="ion-text-center">{{ mapping.mappingValue }}</ion-label>
+                    <ion-note class="ion-text-center" v-if="mapping.synced == 'Y'" color="success">{{ translate("Synced") }}</ion-note>
+                    <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
                       {{ translate("Sync") }}
                     </ion-button>
-                    <ion-button fill="clear" @click="deleteIntegrationTypeMappings(mapping)">
-                      <ion-icon :icon="trashOutline" size="large" color="medium"></ion-icon>
+                    <ion-button class="ion-text-center" fill="clear" size="default" @click="deleteIntegrationTypeMappings(mapping)">
+                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium"></ion-icon>
                     </ion-button>
                   </div>
-                </ion-item>                 
+                </ion-item>
               </ion-list>
             </ion-card>
           </div>
@@ -393,10 +385,10 @@ async function getAPIKey(credentials: any) {
  
 </script>
 <style scoped>
-@media (min-width: 431px) {
+@media (min-width: 531px) {
   section {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(431px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
   }
 }
 
@@ -408,5 +400,24 @@ h1 {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.item-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 6fr 2fr 2fr 2fr;
+  align-items: center;
+}
+
+.item-grid-loop {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 8fr 2fr 2fr;
+  align-items: center;
+
+}
+
+.ion-text-center {
+  text-align: center;
 }
 </style>
