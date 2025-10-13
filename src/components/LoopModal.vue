@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate(props.accountType == "sandbox" ? "Add Loop Sandbox" : "Add Loop Production") }}</ion-title>
+      <ion-title>{{ translate(props.accountType == "sandbox" ? "Add Loop Sandbox" : "Add Loop Production") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
