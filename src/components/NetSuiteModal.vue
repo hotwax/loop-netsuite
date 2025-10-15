@@ -24,7 +24,7 @@
       <ion-label>
         {{ translate("Import PEM File") }}
       </ion-label>
-      <input @change="uploadPemFile" ref="file" type="file" class="ion-hide"  id="updatePemFile" accept=".pem"/>
+      <input @change="uploadPemFile" ref="file" type="file" class="ion-hide"  id="updatePemFile" accept=".pem" required/>
       <label for="updatePemFile" class="pointer">
         {{ translate("Upload PEM File") }}
       </label>
@@ -39,6 +39,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -75,5 +76,13 @@ const uploadPemFile = async (event: any) => {
   netSuiteDetails.value.sshKey = selectedFile;
 }
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(netSuiteDetails.value, 'save')
+const confirm = () => {
+  const { remoteId, sharedSecret, sendSharedSecret, sshKey } = netSuiteDetails.value;
+  if (!remoteId.trim() || !sharedSecret.trim() || !sendSharedSecret.trim() || !sshKey) {
+    showToast(translate("Please fill in all fields before saving."));
+    return;
+  } else {
+    modalController.dismiss(netSuiteDetails.value, 'save')
+  }
+}
 </script>

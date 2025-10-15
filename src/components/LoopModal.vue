@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -52,5 +53,12 @@ const loopDetails = ref({
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(loopDetails.value, 'save');
+const confirm = () => {
+  if (!loopDetails.value.privateKey.trim() || !loopDetails.value.sendSharedSecret.trim()) {
+    showToast(translate("Please fill in all fields before saving."));
+    return;
+  } else {
+    modalController.dismiss(loopDetails.value, 'save')
+  }
+}
 </script>

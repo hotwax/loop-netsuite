@@ -114,7 +114,7 @@
             <ion-card>
               <ion-card-header>
                 <ion-item lines="none">
-                  <ion-card-title>{{ translate("NetSuite Integration mapping") }}</ion-card-title>
+                  <ion-card-title>{{ translate("NetSuite integration mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true">
