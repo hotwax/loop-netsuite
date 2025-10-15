@@ -382,6 +382,13 @@ img {
     cursor: pointer;
  }
 
+.find {
+  display: grid;
+  grid-template-areas: "search"
+                       "filters";
+  align-items: start;
+}
+
 @media (min-width: 991px) {
   /* shipment card desktop layout start */
   .results {
@@ -420,6 +427,13 @@ img {
 
   .mobile-only {
     display: none;
+  }
+
+  .find {
+    grid: "search  main" min-content
+          / 375px;
+    /* column-gap: var(--spacer-2xl);
+    margin: var(--spacer-lg); */
   }  
 } 
 
