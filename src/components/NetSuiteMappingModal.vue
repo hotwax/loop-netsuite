@@ -47,6 +47,7 @@ import {
 } from '@ionic/vue';
 import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineProps, onMounted, ref } from 'vue';
+import { showToast } from '@/utils';
 
 const props = defineProps(["accountType", "systemMessageRemoteId"]);
 
@@ -69,5 +70,13 @@ async function getNetSuiteRMATypeMapping() {
 }
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(netsuiteRmaMap.value, 'save');
+const confirm = () => {
+  if (!netsuiteRmaMap.value.enumId.trim() || !netsuiteRmaMap.value.mappingValue.trim()) {
+    showToast(translate("Please fill in all fields before saving."));
+    return;
+  } else {
+    modalController.dismiss(netsuiteRmaMap.value, 'save');
+  }
+}
+
 </script>
