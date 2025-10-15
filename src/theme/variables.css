@@ -378,6 +378,10 @@ img {
   height: 100%;
 }
 
+.pointer {
+    cursor: pointer;
+ }
+
 @media (min-width: 991px) {
   /* shipment card desktop layout start */
   .results {

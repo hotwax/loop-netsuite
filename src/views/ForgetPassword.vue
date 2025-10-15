@@ -7,7 +7,7 @@
             <Logo />
             <ion-card-header class="ion-text-center">
               <ion-card-title>{{translate("Reset Password")}}</ion-card-title>
-              <ion-card-subtitle>{{translate("Enter your email and we'll send you a link to reset your password.")}}</ion-card-subtitle>
+              <ion-card-subtitle>{{translate("Enter your email and we will send you a link to reset your password.")}}</ion-card-subtitle>
             </ion-card-header>
             <ion-item>
               <ion-input :label="translate('Email')" label-placement="fixed" v-model="emailAddress" type="email"></ion-input>

@@ -2,8 +2,8 @@ import { api, client } from '@/adapter';
 import store from '@/store';
 
 const login = async (username: string, password: string): Promise<any> => {
-  const url =  process.env.VUE_APP_BASE_URL
-  const baseURL = url.startsWith('http') ? url.includes('/rest/s1/order-routing') ? url : `${url}/rest/s1/order-routing/` : `https://${url}.hotwax.io/rest/s1/order-routing/`;
+  const url = process.env.VUE_APP_BASE_URL
+  const baseURL = url.startsWith('http') ? url.includes('/rest/s1/netsuite-loop-connector') ? url : `${url}/rest/s1/netsuite-loop-connector/` : `https://${url}.hotwax.io/rest/s1/netsuite-loop-connector/`;
   return await client({
     url: "login",
     method: "post",
@@ -30,29 +30,176 @@ const checkPermission = async (payload: any): Promise<any> => {
 }
 
 const getProfile = async (): Promise<any> => {
-  return
+  return api({
+    url: "/netsuite-loop-connector/organizations/profile",
+    method: "get",
+  });
 }
 
-const createUser = async (payload: any): Promise <any> => {
+const getNetSuiteDetails = async (): Promise<any> => {
   return api({
-    url: "services/user/createUser", 
-    method: "post",
-    data: payload
+    url: "/netsuite-loop-connector/organizations/netsuiteDetails",
+    method: "get",
   });
 }
 
 const registerUser = async (payload: any): Promise<any> => {
   return api({
-    url: "services/user/registerUser",
+    url: "/netsuite-loop-connector/register",
     method: "post",
     data: payload
   });
 }
 
+const uploadNetSuiteCredentials = async (payload: any): Promise<any> => {
+  const formData = new FormData();
+  formData.append('sshKey', payload.sshKey, payload.sshKey.name);
+  formData.append('remoteId', payload.remoteId);
+  formData.append('sharedSecret', payload.sharedSecret);
+  formData.append('sendSharedSecret', payload.sendSharedSecret);
+  formData.append('accountType', payload.accountType);
+  return api({
+    url: "/netsuite-loop-connector/organizations/netsuiteDetails",
+    method: "post",
+    data: formData,
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+}
+
+const deleteNetSuiteCredential = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/netsuiteDetails",
+    method: "delete",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId,
+      accountType: payload.accountType
+    }
+  });
+}
+
+const uploadLoopCredentials = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/loopDetails",
+    method: "post",
+    data: payload
+  });
+}
+
+const getLoopDetails = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/loopDetails",
+    method: "get",
+  });
+}
+
+const deleteLoopCredential = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/loopDetails",
+    method: "delete",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId,
+      accountType: payload.accountType
+    }
+  });
+}
+
+const verifyNetsuiteCredential = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/verifyNetSuiteConnection",
+    method: "post",
+    data: {
+      systemMessageRemoteId: payload
+    }
+  });
+}
+
+const verifyloopCredential = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
+    method: "post",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId,
+      accountType: payload.accountType
+    }
+  });
+}
+
+const getVerifyLoopWebhook = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
+    method: "get",
+  });
+}
+
+const getAPIKey = async (payload: any): Promise<any> => {
+  return api({
+    url: `/netsuite-loop-connector/organizations/apiKey`,
+    method: "post",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId
+    }
+  });
+}
+
+const getNetSuiteRMATypeMapping = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/returnIntegrationTypeMapping",
+    method: "get",
+  });
+}
+
+const getNetSuiteRMAMapping = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "get",
+  });
+}
+
+const postNetsuiteMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "POST",
+    data: payload
+  });
+}
+
+const syncNetsuiteMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/syncIntegrationTypeMapping",
+    method: "POST",
+    data: { integrationMappingId: payload }
+  });
+}
+
+const deleteIntegrationTypeMappings = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
+    method: "delete",
+    data: {
+      integrationMappingId: payload.integrationMappingId,
+      integrationTypeId: payload.integrationTypeId
+    }
+  });
+}
+
 export const UserService = {
   checkPermission,
-  createUser,
+  deleteLoopCredential,
+  deleteNetSuiteCredential,
+  deleteIntegrationTypeMappings,
+  getAPIKey,
+  getLoopDetails,
+  getNetSuiteDetails,
+  getNetSuiteRMAMapping,
+  getNetSuiteRMATypeMapping,
   getProfile,
+  getVerifyLoopWebhook,
   login,
-  registerUser
+  postNetsuiteMapping,
+  registerUser,
+  syncNetsuiteMapping,
+  uploadLoopCredentials,
+  uploadNetSuiteCredentials,
+  verifyloopCredential,
+  verifyNetsuiteCredential
 }
