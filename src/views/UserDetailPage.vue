@@ -212,28 +212,28 @@
                 <h2>{{ translate("Loop Return Statistics") }}</h2>
               </ion-item>
               <ion-item lines="none">
-                <ion-searchbar :placeholder="translate('Search Return')"/>
+                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value; updateAppliedFilter($event.target.value)"/>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('all')">
                 <ion-label>
-                  {{ translate("All Return") }}
+                  {{ translate("All Returns") }}
                 </ion-label>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('open')">
                 <ion-label>
-                  {{ translate("Open Return") }}
+                  {{ translate("Open Returns") }}
                 </ion-label>
                 <ion-chip color="primary">{{ "551" }}</ion-chip>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('closed')">
                 <ion-label>
-                  {{ translate("Closed Return") }}
+                  {{ translate("Closed Returns") }}
                 </ion-label>
                 <ion-chip color="success">{{ "551" }}</ion-chip>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('failed')">
                 <ion-label>
-                  {{ translate("Failed Return") }}
+                  {{ translate("Failed Returns") }}
                 </ion-label>
                 <ion-chip color="danger">{{ "551" }}</ion-chip>
               </ion-item>
@@ -241,18 +241,18 @@
           </aside>
           <main>
             <ion-item>
-              <div class="section-header">
+              <div class="section-header ion-text-center">
                 <strong>{{"Loop Return ID"}}</strong>
                 <strong>{{"Shopify Order ID"}}</strong>
                 <strong>{{"Shopify Order Name"}}</strong>
                 <strong>{{"Netsuite Return ID"}}</strong>
-                <strong class="ion-text-center">{{"Loop Return ID"}}</strong>
-                <strong class="ion-text-center">{{"Loop Return ID"}}</strong>
+                <strong>{{"Loop Return ID"}}</strong>
+                <strong>{{"Loop Return ID"}}</strong>
               </div>
             </ion-item>
             <div class="list-item">
-              <ion-item v-for="(item, i) in fillteredReturnStatusList" :key="i" class="list-item">
-                <div class="section-header">
+              <ion-item v-for="(item, i) in filteredReturnStatusList" :key="i" class="list-item">
+                <div class="section-header ion-text-center">
                   <ion-label>{{item.loopReturnId}}</ion-label>
                   <ion-label>{{ item.shopifyOrderId }}</ion-label>
                   <ion-label>
@@ -261,7 +261,7 @@
                     </ion-chip>
                   </ion-label>
                   <ion-label>{{item.netsuiteReturnId}}</ion-label>
-                  <ion-label class="ion-text-center">
+                  <ion-label>
                     <ion-badge :color="item.status === 'Open' ? 'primary' : item.status === 'Refunded' ? 'success' : 'danger'">{{ item.status }}</ion-badge>
                   </ion-label>
                   <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
@@ -306,7 +306,7 @@ import {
 import { ref } from "vue";
 import { useStore } from "@/store";
 import { copyToClipboard, showToast } from "@/utils";
-import { addOutline, chevronDownOutline, openOutline, trashOutline } from "ionicons/icons";
+import { addOutline, openOutline, trashOutline } from "ionicons/icons";
 import NetSuiteModal from "@/components/NetSuiteModal.vue";
 import LoopModal from "@/components/LoopModal.vue";
 import { translate } from '@/i18n';
@@ -323,6 +323,7 @@ const loopCredentialsList = ref([]);
 const profile = ref({})
 const loopWebhookVerified = ref([]);
 const netSuiteMapping = ref([]);
+const searchQuery = ref('');
 const returnStatusList = ref(
   [
   {
@@ -665,7 +666,7 @@ const returnStatusList = ref(
 
 );
 
-const fillteredReturnStatusList = ref([...returnStatusList.value]);
+const filteredReturnStatusList = ref([...returnStatusList.value]);
 
 onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
@@ -888,13 +889,20 @@ async function openReturnStatusModal(returnMap: any) {
 
 function updateAppliedFilter(filter: string) {
   if (filter === 'all') {
-    fillteredReturnStatusList.value = [...returnStatusList.value];
+    filteredReturnStatusList.value = [...returnStatusList.value];
   } else if (filter === 'open') {
-    fillteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Open');
+    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Open');
   } else if (filter === 'closed') {
-    fillteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Refunded');
+    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Refunded');
   } else if (filter === 'failed') {
-    fillteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Error');
+    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Error');
+  } else {
+    const query = filter.trim().toLowerCase();
+    filteredReturnStatusList.value = returnStatusList.value.filter(item =>
+      Object.values(item).some(val =>
+        String(val).toLowerCase().includes(query)
+      )
+    );
   }
 }
 
