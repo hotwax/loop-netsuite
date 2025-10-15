@@ -11,13 +11,13 @@
   </ion-header>
   <ion-content class="ion-padding-top">
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('Old Password')" v-model="changePassword.oldPassword" type="text"></ion-input>
+      <ion-input label-placement="floating" :label="translate('Old Password')" v-model="changePassword.oldPassword" type="password"></ion-input>
     </ion-item>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('New Password')" v-model="changePassword.newPassword" type="text"></ion-input>
+      <ion-input label-placement="floating" :label="translate('New Password')" v-model="changePassword.newPassword" type="password"></ion-input>
     </ion-item>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('Confirm Password')" v-model="changePassword.newPasswordVerify" type="email"></ion-input>
+      <ion-input label-placement="floating" :label="translate('Confirm Password')" v-model="changePassword.newPasswordVerify" type="password"></ion-input>
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -56,5 +57,12 @@ const changePassword = ref({
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(changePassword.value, 'save');
+const confirm = () => {
+  if (changePassword.value.newPassword !== changePassword.value.newPasswordVerify) {
+    showToast(translate("New Password and Confirm Password do not match."));
+    return;
+  } else {
+    modalController.dismiss(changePassword.value, 'save');
+  }
+}
 </script>

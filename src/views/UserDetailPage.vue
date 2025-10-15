@@ -166,29 +166,29 @@
         <div class="user-profile">
           <ion-card class="ion-card-width ion-padding">
             <ion-card-header>
-              <ion-card-title>User Account Information</ion-card-title>
+              <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
               <ion-card-subtitle>{{ profile.organizationName }}</ion-card-subtitle>
             </ion-card-header>
             <ion-list lines="full">
               <ion-item>
-                <ion-label>User ID</ion-label>
-                <ion-text color="dark"><p>{{ profile.userId }}</p></ion-text>
+                <ion-label>{{translate("User Id")}}</ion-label>
+                <ion-text><p>{{ profile.userId }}</p></ion-text>
               </ion-item>
               <ion-item>
-                <ion-label>Full Name </ion-label>
-                <ion-text color="dark"><p>{{ profile.userFullName }}</p></ion-text>
+                <ion-label>{{translate("Full Name")}} </ion-label>
+                <ion-text><p>{{ profile.userFullName }}</p></ion-text>
               </ion-item>
               <ion-item>
-                <ion-label>Email </ion-label>
-                <ion-text color="dark"><p>{{ profile.emailAddress }}</p></ion-text>
+                <ion-label>{{translate("Email")}}</ion-label>
+                <ion-text><p>{{ profile.emailAddress }}</p></ion-text>
               </ion-item>
               <ion-item>
-                <ion-label>Username</ion-label>
-                <ion-text color="dark"><p>{{ profile.username }}</p></ion-text>
+                <ion-label>{{translate("Username")}}</ion-label>
+                <ion-text><p>{{ profile.username }}</p></ion-text>
               </ion-item>
               <ion-item>
-                <ion-label>Organization Name </ion-label>
-                <ion-text color="dark"><p>{{ profile.organizationName }}</p></ion-text>
+                <ion-label>{{translate("Organization Name")}}</ion-label>
+                <ion-text><p>{{ profile.organizationName }}</p></ion-text>
               </ion-item>
               <ion-item lines="none" >
                 <div slot="end" class="ion-margin-top">
@@ -231,6 +231,7 @@ import {
   IonSegmentButton,
   IonThumbnail,
   IonToolbar,
+  IonText,
   modalController,
   onIonViewDidEnter
 } from "@ionic/vue";
@@ -450,11 +451,6 @@ async function updatePassword(profile: any ) {
   });
   modal.present();
   const { data, role } = await modal.onWillDismiss();
-  console.log("data--",data);
-  if (data.newPassword !== data.newPasswordVerify) {
-    showToast(translate("New Password and Confirm Password do not match."));
-    return;
-  }
   if (role === 'save') {
     const response = await store.dispatch('user/updatePassword', data);
     if (response) {

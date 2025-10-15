@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate("Edit Your Profile") }}</ion-title>
+      <ion-title>{{ translate("Edit Your Profile") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding-top">
@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -53,11 +54,19 @@ const props = defineProps(["profile"]);
 const profile = props.profile as any
 const updateUserProfile = ref({
   userId: props.profile.userId,
-  username: '',
-  userFullName: '',
-  emailAddress: ''
+  username: profile.username,
+  userFullName: profile.userFullName,
+  emailAddress: profile.emailAddress
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(updateUserProfile.value, 'save');
+const confirm = () => {
+  const { userFullName, username, emailAddress } = updateUserProfile.value;
+  if (!userFullName.trim() || !username.trim() || !emailAddress.trim()) {
+    showToast(translate("Please fill in all fields before submitting."));
+    return;
+  } else {
+    modalController.dismiss(updateUserProfile.value, 'save');
+  }
+};
 </script>
