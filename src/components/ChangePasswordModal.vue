@@ -6,7 +6,7 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate("Change Password") }}</ion-title>
+      <ion-title>{{ translate("Change Password") }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding-top">
