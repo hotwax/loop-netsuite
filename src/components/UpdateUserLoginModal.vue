@@ -9,7 +9,7 @@
       <ion-title>{{ translate("Edit Your Profile") }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding-top">
+  <ion-content>
     <ion-item lines="full">
       <ion-input label-placement="floating" :label="translate('User Id')" v-model="profile.userId" :readonly="true"></ion-input>
     </ion-item>
@@ -53,7 +53,7 @@ import { defineProps, ref } from 'vue';
 const props = defineProps(["profile"]);
 const profile = props.profile as any
 const updateUserProfile = ref({
-  userId: props.profile.userId,
+  userId: profile.userId,
   username: profile.username,
   userFullName: profile.userFullName,
   emailAddress: profile.emailAddress

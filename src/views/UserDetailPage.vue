@@ -162,47 +162,43 @@
           </div>
         </section>
       </div>
-      <div v-if="segmentSelected === 'account'">
-        <div class="user-profile">
-          <ion-card class="ion-card-width ion-padding">
-            <ion-card-header>
-              <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
-              <ion-card-subtitle>{{ profile.organizationName }}</ion-card-subtitle>
-            </ion-card-header>
-            <ion-list lines="full">
-              <ion-item>
-                <ion-label>{{translate("User Id")}}</ion-label>
-                <ion-text><p>{{ profile.userId }}</p></ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{translate("Full Name")}} </ion-label>
-                <ion-text><p>{{ profile.userFullName }}</p></ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{translate("Email")}}</ion-label>
-                <ion-text><p>{{ profile.emailAddress }}</p></ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{translate("Username")}}</ion-label>
-                <ion-text><p>{{ profile.username }}</p></ion-text>
-              </ion-item>
-              <ion-item>
-                <ion-label>{{translate("Organization Name")}}</ion-label>
-                <ion-text><p>{{ profile.organizationName }}</p></ion-text>
-              </ion-item>
-              <ion-item lines="none" >
-                <div slot="end" class="ion-margin-top">
-                  <ion-button color="warning" fill="outline" @click="updatePassword(profile)">
-                    {{ translate("Change Password") }}
-                  </ion-button>
-                  <ion-button fill="outline" @click="updateProfile(profile)">
-                    {{ translate("Update Profile") }}
-                  </ion-button>
-                </div>
-              </ion-item>
-           </ion-list>
-          </ion-card>
-        </div>
+      <div v-if="segmentSelected === 'account'" class="user-profile">
+        <ion-card class="ion-card-width">
+          <ion-card-header>
+            <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
+            <ion-card-subtitle>{{ profile.organizationName }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item>
+              <ion-label>{{translate("User Id")}}</ion-label>
+              <ion-label slot="end">{{ profile.userId }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Full Name")}} </ion-label>
+              <ion-label slot="end">{{ profile.userFullName }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Email")}}</ion-label>
+              <ion-label slot="end">{{ profile.emailAddress }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Username")}}</ion-label>
+              <ion-label slot="end">{{ profile.username }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Organization Name")}}</ion-label>
+              <ion-label slot="end">{{ profile.organizationName }}</ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-button slot="end" color="warning" fill="outline" @click="updatePassword(profile)">
+                {{ translate("Change Password") }}
+              </ion-button>
+              <ion-button slot="end" fill="outline" @click="updateProfile(profile)">
+                {{ translate("Update Profile") }}
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card>
       </div>
       <div v-if="segmentSelected === 'syncStatus'">
       </div>
@@ -231,7 +227,6 @@ import {
   IonSegmentButton,
   IonThumbnail,
   IonToolbar,
-  IonText,
   modalController,
   onIonViewDidEnter
 } from "@ionic/vue";
@@ -246,6 +241,9 @@ import { translate } from '@/i18n';
 import NetSuiteMappingModal from "@/components/NetSuiteMappingModal.vue";
 import UpdateUserLoginModal from "@/components/UpdateUserLoginModal.vue";
 import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
+import { hasError } from "@hotwax/oms-api";
+import logger from "@/logger";
+import { UserService } from "@/services/UserService";
 
 const store = useStore();
 
@@ -435,10 +433,17 @@ async function updateProfile(profile: any ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    const response = await store.dispatch('user/updateUserProfile', data);
-    if (response) {
-      fetchUserProfile()
-      showToast(translate("User profile updated successfully."));
+    try {
+      const response = await UserService.updateUserProfile(data)
+      if (!hasError(response)) {
+        fetchUserProfile()
+        showToast(translate("User profile updated successfully."));
+      } else {
+        throw response.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed to update user profile."));
     }
   }
 } 
@@ -452,10 +457,16 @@ async function updatePassword(profile: any ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    const response = await store.dispatch('user/updatePassword', data);
-    if (response) {
-      fetchUserProfile()
-      showToast(translate("New password updated successfully."));
+    try {
+      const resp = await UserService.updatePassword(data)
+      if (!hasError(resp)) {
+        showToast(translate("New password updated successfully."));
+      } else {
+        throw resp.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed to update password."));
     }
   }
 }
@@ -467,16 +478,11 @@ async function updatePassword(profile: any ) {
     grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
   }
 }
-.user-profile {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+
 .ion-card-width {
   width: 100%;
   max-width: 500px;
+  margin: 10px auto
 }
 h1 {
   margin: 24px 24px 0;
