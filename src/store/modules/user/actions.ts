@@ -264,32 +264,6 @@ const actions: ActionTree<UserState, RootState> = {
       showToast(translate("Unable to fetch NetSuite RMA mapping List."));
     }
   },
-  async updateUserProfile({ commit, dispatch }, payload) {
-    try {
-      const resp = await UserService.updateUserProfile(payload)
-      if (!hasError(resp)) {
-        return resp.data;
-      } else {
-        throw resp.data
-      }
-    } catch (err) {
-      logger.error(err)
-      showToast(translate("Failed to update user profile."));
-    }
-  },
-  async updatePassword({ commit, dispatch }, payload) {
-    try {
-      const resp = await UserService.updatePassword(payload)
-      if (!hasError(resp)) {
-        return resp.data;
-      } else {
-        throw resp.data
-      }
-    } catch (err) {
-      logger.error(err)
-      showToast(translate("Failed to update password."));
-    }
-  },
 }
 
 export default actions;

@@ -9,7 +9,7 @@
       <ion-title>{{ translate("Change Password") }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding-top">
+  <ion-content>
     <ion-item lines="full">
       <ion-input label-placement="floating" :label="translate('Old Password')" v-model="changePassword.oldPassword" type="password"></ion-input>
     </ion-item>
@@ -58,6 +58,11 @@ const changePassword = ref({
 
 const cancel = () => modalController.dismiss(null, 'cancel');
 const confirm = () => {
+  const { oldPassword, newPassword, newPasswordVerify } = changePassword.value;
+  if (!oldPassword.trim() || !newPassword.trim() || !newPasswordVerify.trim()) {
+    showToast(translate("Please fill in all fields before submitting."));
+    return;
+  }
   if (changePassword.value.newPassword !== changePassword.value.newPasswordVerify) {
     showToast(translate("Password is not matching with confirm password."));
     return;
