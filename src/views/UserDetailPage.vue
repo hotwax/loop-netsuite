@@ -438,7 +438,7 @@ async function updateProfile(profile: any ) {
     const response = await store.dispatch('user/updateUserProfile', data);
     if (response) {
       fetchUserProfile()
-      showToast(translate("User profile updated saved successfully."));
+      showToast(translate("User profile updated successfully."));
     }
   }
 } 
