@@ -63,7 +63,7 @@ const confirm = () => {
     showToast(translate("Please fill in all fields before submitting."));
     return;
   }
-  if (changePassword.value.newPassword !== changePassword.value.newPasswordVerify) {
+  if (newPassword !== newPasswordVerify) {
     showToast(translate("Password is not matching with confirm password."));
     return;
   } else {
