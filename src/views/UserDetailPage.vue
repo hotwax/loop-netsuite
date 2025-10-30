@@ -162,7 +162,43 @@
           </div>
         </section>
       </div>
-      <div v-if="segmentSelected === 'account'">
+      <div v-if="segmentSelected === 'account'" class="user-profile">
+        <ion-card class="ion-card-width">
+          <ion-card-header>
+            <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
+            <ion-card-subtitle>{{ profile.organizationName }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item>
+              <ion-label>{{translate("User Id")}}</ion-label>
+              <ion-label slot="end">{{ profile.userId }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Full Name")}} </ion-label>
+              <ion-label slot="end">{{ profile.userFullName }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Email")}}</ion-label>
+              <ion-label slot="end">{{ profile.emailAddress }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Username")}}</ion-label>
+              <ion-label slot="end">{{ profile.username }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>{{translate("Organization Name")}}</ion-label>
+              <ion-label slot="end">{{ profile.organizationName }}</ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-button slot="end" color="warning" fill="outline" @click="updatePassword(profile)">
+                {{ translate("Change Password") }}
+              </ion-button>
+              <ion-button slot="end" fill="outline" @click="updateProfile(profile)">
+                {{ translate("Update Profile") }}
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card>
       </div>
       <div v-if="segmentSelected === 'syncStatus'">
       </div>
@@ -203,6 +239,11 @@ import NetSuiteModal from "@/components/NetSuiteModal.vue";
 import LoopModal from "@/components/LoopModal.vue";
 import { translate } from '@/i18n';
 import NetSuiteMappingModal from "@/components/NetSuiteMappingModal.vue";
+import UpdateUserLoginModal from "@/components/UpdateUserLoginModal.vue";
+import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
+import { hasError } from "@hotwax/oms-api";
+import logger from "@/logger";
+import { UserService } from "@/services/UserService";
 
 const store = useStore();
 
@@ -382,7 +423,53 @@ async function getAPIKey(credentials: any) {
     showToast(translate("Unable to get NetSuite apiKey. Please try again."));
   }
 }
- 
+
+async function updateProfile(profile: any ) {
+  
+  const modal = await modalController.create({
+    component: UpdateUserLoginModal,
+    componentProps: { profile },
+  });
+  modal.present();
+  const { data, role } = await modal.onWillDismiss();
+  if (role === 'save') {
+    try {
+      const response = await UserService.updateUserProfile(data)
+      if (!hasError(response)) {
+        fetchUserProfile()
+        showToast(translate("User profile updated successfully."));
+      } else {
+        throw response.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed to update user profile."));
+    }
+  }
+} 
+
+async function updatePassword(profile: any ) {
+  
+  const modal = await modalController.create({
+    component: ChangePasswordModal,
+    componentProps: { profile },
+  });
+  modal.present();
+  const { data, role } = await modal.onWillDismiss();
+  if (role === 'save') {
+    try {
+      const resp = await UserService.updatePassword(data)
+      if (!hasError(resp)) {
+        showToast(translate("New password updated successfully."));
+      } else {
+        throw resp.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed to update password."));
+    }
+  }
+}
 </script>
 <style scoped>
 @media (min-width: 531px) {
@@ -392,6 +479,11 @@ async function getAPIKey(credentials: any) {
   }
 }
 
+.ion-card-width {
+  width: 100%;
+  max-width: 500px;
+  margin: 10px auto
+}
 h1 {
   margin: 24px 24px 0;
 }

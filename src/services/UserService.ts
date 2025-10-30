@@ -182,6 +182,22 @@ const deleteIntegrationTypeMappings = async (payload: any): Promise<any> => {
   });
 }
 
+const updateUserProfile = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/updateProfile",
+    method: "post",
+    data: payload
+  });
+}
+
+const updatePassword = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/changePassword",
+    method: "post",
+    data: payload
+  });
+}
+
 export const UserService = {
   checkPermission,
   deleteLoopCredential,
@@ -200,6 +216,8 @@ export const UserService = {
   syncNetsuiteMapping,
   uploadLoopCredentials,
   uploadNetSuiteCredentials,
+  updatePassword,
+  updateUserProfile,
   verifyloopCredential,
   verifyNetsuiteCredential
 }
