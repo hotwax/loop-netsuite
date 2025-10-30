@@ -59,7 +59,7 @@ const changePassword = ref({
 const cancel = () => modalController.dismiss(null, 'cancel');
 const confirm = () => {
   if (changePassword.value.newPassword !== changePassword.value.newPasswordVerify) {
-    showToast(translate("New Password and Confirm Password do not match."));
+    showToast(translate("Password is not matching with confirm password."));
     return;
   } else {
     modalController.dismiss(changePassword.value, 'save');
