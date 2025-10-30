@@ -4,9 +4,9 @@ import Register from '@/views/Register.vue';
 import ForgetPassword from '@/views/ForgetPassword.vue';
 import Login from '@/views/Login.vue'
 import store from '@/store'
-import UserDetailPage from '@/views/UserDetailPage.vue';
 import Tabs from '@/components/Tabs.vue';
-import Setting from '@/views/Setting.vue';
+import Settings from '@/views/Settings.vue';
+import Home from '@/views/Home.vue';
 
 const authGuard = (to: any, from: any, next: any) => {
   if (store.getters['user/isAuthenticated']) {
@@ -40,12 +40,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "home",
         name: "Home",
-        component: UserDetailPage
+        component: Home
       },
       {
         path: "settings",
         name: "Settings",
-        component: Setting
+        component: Settings
       }
     ],
     beforeEnter: authGuard
