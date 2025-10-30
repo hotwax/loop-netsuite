@@ -460,7 +460,6 @@ async function updatePassword(profile: any ) {
     try {
       const resp = await UserService.updatePassword(data)
       if (!hasError(resp)) {
-        fetchUserProfile()
         showToast(translate("New password updated successfully."));
       } else {
         throw resp.data
