@@ -52,8 +52,8 @@ async function fetchUserProfile() {
 
 function logout() {
   store.dispatch('user/logout').then(() => {
-      const redirectUrl = window.location.origin + '/login'
-      window.location.href = redirectUrl
+    const redirectUrl = window.location.origin + '/login'
+    window.location.href = redirectUrl
   })
 }
 
