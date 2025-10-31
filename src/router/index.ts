@@ -4,7 +4,9 @@ import Register from '@/views/Register.vue';
 import ForgetPassword from '@/views/ForgetPassword.vue';
 import Login from '@/views/Login.vue'
 import store from '@/store'
-import UserDetailPage from '@/views/UserDetailPage.vue';
+import Tabs from '@/components/Tabs.vue';
+import Settings from '@/views/Settings.vue';
+import Home from '@/views/Home.vue';
 
 const authGuard = (to: any, from: any, next: any) => {
   if (store.getters['user/isAuthenticated']) {
@@ -25,12 +27,27 @@ const loginGuard = (to: any, from: any, next: any) => {
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/user-detail'
+    redirect: '/tabs/home'
   },
   {
-    path: '/user-detail',
-    name: 'UserDetail',
-    component: UserDetailPage,
+    path: "/tabs",
+    component: Tabs,
+    children: [
+      {
+        path: "",
+        redirect: "/tabs/home"
+      },
+      {
+        path: "home",
+        name: "Home",
+        component: Home
+      },
+      {
+        path: "settings",
+        name: "Settings",
+        component: Settings
+      }
+    ],
     beforeEnter: authGuard
   },
   {
