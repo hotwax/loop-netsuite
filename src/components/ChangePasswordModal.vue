@@ -6,18 +6,18 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate("Change Password") }}</ion-title>
+      <ion-title>{{ translate("Change Password") }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding-top">
+  <ion-content>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('Old Password')" v-model="changePassword.oldPassword" type="text"></ion-input>
+      <ion-input label-placement="floating" :label="translate('Old Password')" v-model="changePassword.oldPassword" type="password"></ion-input>
     </ion-item>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('New Password')" v-model="changePassword.newPassword" type="text"></ion-input>
+      <ion-input label-placement="floating" :label="translate('New Password')" v-model="changePassword.newPassword" type="password"></ion-input>
     </ion-item>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('Confirm Password')" v-model="changePassword.newPasswordVerify" type="email"></ion-input>
+      <ion-input label-placement="floating" :label="translate('Confirm Password')" v-model="changePassword.newPasswordVerify" type="password"></ion-input>
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
       <ion-fab-button @click="confirm">
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -56,5 +57,17 @@ const changePassword = ref({
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(changePassword.value, 'save');
+const confirm = () => {
+  const { oldPassword, newPassword, newPasswordVerify } = changePassword.value;
+  if (!oldPassword.trim() || !newPassword.trim() || !newPasswordVerify.trim()) {
+    showToast(translate("Please fill in all fields before submitting."));
+    return;
+  }
+  if (newPassword !== newPasswordVerify) {
+    showToast(translate("Password is not matching with confirm password."));
+    return;
+  } else {
+    modalController.dismiss(changePassword.value, 'save');
+  }
+}
 </script>

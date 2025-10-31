@@ -6,7 +6,7 @@
           <form class="form-card" @keyup.enter="userRegister(form)" @submit.prevent="userRegister(form)">
             <Logo />
             <ion-item>
-              <ion-input label-placement="floating" :label="translate('Full name')" v-model="registerData.userFullName">
+              <ion-input label-placement="floating" :label="translate('Full Name')" v-model="registerData.userFullName">
                  <ion-text color="danger">*</ion-text>
               </ion-input>
             </ion-item>

@@ -6,10 +6,10 @@
           <ion-icon :icon="closeOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title color="dark">{{ translate("Edit Your Profile") }}</ion-title>
+      <ion-title>{{ translate("Edit Your Profile") }}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding-top">
+  <ion-content>
     <ion-item lines="full">
       <ion-input label-placement="floating" :label="translate('User Id')" v-model="profile.userId" :readonly="true"></ion-input>
     </ion-item>
@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { translate } from '@/i18n';
+import { showToast } from '@/utils';
 import {
   IonButton,
   IonButtons,
@@ -52,12 +53,20 @@ import { defineProps, ref } from 'vue';
 const props = defineProps(["profile"]);
 const profile = props.profile as any
 const updateUserProfile = ref({
-  userId: props.profile.userId,
-  username: '',
-  userFullName: '',
-  emailAddress: ''
+  userId: profile.userId,
+  username: profile.username,
+  userFullName: profile.userFullName,
+  emailAddress: profile.emailAddress
 });
 
 const cancel = () => modalController.dismiss(null, 'cancel');
-const confirm = () => modalController.dismiss(updateUserProfile.value, 'save');
+const confirm = () => {
+  const { userFullName, username, emailAddress } = updateUserProfile.value;
+  if (!userFullName.trim() || !username.trim() || !emailAddress.trim()) {
+    showToast(translate("Please fill in all fields before submitting."));
+    return;
+  } else {
+    modalController.dismiss(updateUserProfile.value, 'save');
+  }
+};
 </script>
