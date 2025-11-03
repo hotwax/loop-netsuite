@@ -8,7 +8,7 @@ const login = async (username: string, password: string): Promise<any> => {
     url: "login",
     method: "post",
     baseURL,
-    params: {
+    data: {
       username,
       password
     },

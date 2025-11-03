@@ -3,11 +3,8 @@
     <ion-content>
       <div class="flex-container">
         <ion-card>
-          <form class="form-card" @keyup.enter="login(form)" @submit.prevent="login(form)">
+          <form class="form-card" @keyup.enter.stop @submit.prevent="login(form)">
             <Logo />
-            <ion-item lines="full" v-if="!baseURL">
-              <ion-input label-placement="fixed" :label="(translate('OMS'))" v-model="instanceUrl" type="text" required />
-            </ion-item>
             <ion-item lines="full">
               <ion-input label-placement="fixed" :label="(translate('Username'))" v-model="username" type="text" required />
             </ion-item>
@@ -49,8 +46,6 @@ const store = useStore();
 const username = ref("");
 const password = ref("");
 const instanceUrl = ref("");
-
-const baseURL = process.env.VUE_APP_BASE_URL;
 
 const currentInstanceUrl = computed(() => store.getters["user/getInstanceUrl"]);
 
