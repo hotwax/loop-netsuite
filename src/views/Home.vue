@@ -27,7 +27,7 @@
               <ion-card-header>
                 <ion-item lines="none">
                   <ion-thumbnail slot="start">
-                    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                    <img alt="Silhouette of mountains" src="../assets/images/defaultImage.png" />
                   </ion-thumbnail>
                   <ion-card-title>{{ translate("NetSuite Credentials") }}</ion-card-title>
                 </ion-item>
@@ -58,8 +58,8 @@
                     <ion-button class="ion-text-center" v-else-if="credentials.verified === 'N'" color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
                       {{ translate("Verify")}}
                     </ion-button>
-                    <ion-button class="ion-text-center" size="default" fill="clear" @click="deleteNetsuiteCredential(credentials)">
-                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium" ></ion-icon>
+                    <ion-button size="default" fill="clear" color="medium" @click="deleteNetsuiteCredential(credentials)">
+                      <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
@@ -71,7 +71,7 @@
               <ion-card-header>
                 <ion-item lines="none">
                   <ion-thumbnail slot="start">
-                    <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/thumbnail.svg" />
+                    <img alt="Silhouette of mountains" src="../assets/images/defaultImage.png" />
                   </ion-thumbnail>
                   <ion-card-title>{{ translate("Loop Credentials") }}</ion-card-title>
                 </ion-item>
@@ -99,8 +99,8 @@
                     <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
                       {{ translate("Subscribe") }}
                     </ion-button>
-                    <ion-button class="ion-text-center" fill="clear" size="default" @click="deleteLoopCredential(loopCredentials)">
-                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium" ></ion-icon>
+                    <ion-button fill="clear" size="default" color="medium" @click="deleteLoopCredential(loopCredentials)">
+                      <ion-icon slot="icon-only" :icon="trashOutline" ></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
@@ -152,8 +152,8 @@
                     <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
                       {{ translate("Sync") }}
                     </ion-button>
-                    <ion-button class="ion-text-center" fill="clear" size="default" @click="deleteIntegrationTypeMappings(mapping)">
-                      <ion-icon slot="icon-only" :icon="trashOutline" color="medium"></ion-icon>
+                    <ion-button fill="clear" size="default" color="medium" @click="deleteIntegrationTypeMappings(mapping)">
+                      <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
