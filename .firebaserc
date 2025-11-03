@@ -1,0 +1,22 @@
+{
+  "projects": {
+    "uat": "hotwax-digital-commerce-uat",
+    "production": "digital-commerce-71eb8"
+  },
+  "targets": {
+    "hotwax-digital-commerce-uat": {
+      "hosting": {
+        "uat": [
+          "hotwax-loop-netsuite-uat"
+        ]
+      }
+    },
+    "digital-commerce-71eb8": {
+      "hosting": {
+        "prod": [
+          "hotwax-loop-netsuite"
+        ]
+      }
+    }
+  }
+}
