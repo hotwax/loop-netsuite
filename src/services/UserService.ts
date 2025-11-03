@@ -198,6 +198,13 @@ const updatePassword = async (payload: any): Promise<any> => {
   });
 }
 
+const getLoopReturnStatusCount = async (): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/return/returnCount",
+    method: "get",
+  });
+}
+
 export const UserService = {
   checkPermission,
   deleteLoopCredential,
@@ -210,6 +217,7 @@ export const UserService = {
   getNetSuiteRMATypeMapping,
   getProfile,
   getVerifyLoopWebhook,
+  getLoopReturnStatusCount,
   login,
   postNetsuiteMapping,
   registerUser,

@@ -219,19 +219,19 @@
                 <ion-label>
                   {{ translate("Open Returns") }}
                 </ion-label>
-                <ion-chip color="primary">{{ "551" }}</ion-chip>
+                <ion-chip color="primary">{{ returnCount.open }}</ion-chip>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('closed')">
                 <ion-label>
                   {{ translate("Closed Returns") }}
                 </ion-label>
-                <ion-chip color="success">{{ "551" }}</ion-chip>
+                <ion-chip color="success">{{ returnCount.closed }}</ion-chip>
               </ion-item>
               <ion-item button @click="updateAppliedFilter('failed')">
                 <ion-label>
                   {{ translate("Failed Returns") }}
                 </ion-label>
-                <ion-chip color="danger">{{ "551" }}</ion-chip>
+                <ion-chip color="danger">{{ returnCount.failed }}</ion-chip>
               </ion-item>
             </ion-list>
           </aside>
@@ -309,13 +309,10 @@ import { translate } from '@/i18n';
 import NetSuiteMappingModal from "@/components/NetSuiteMappingModal.vue";
 import UpdateUserLoginModal from "@/components/UpdateUserLoginModal.vue";
 import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
-<<<<<<< HEAD:src/views/UserDetailPage.vue
 import ReturnStatusModal from "@/components/ReturnStatusModal.vue";
-=======
 import { hasError } from "@hotwax/oms-api";
 import logger from "@/logger";
 import { UserService } from "@/services/UserService";
->>>>>>> 28863528dfa9759fe26a4f7868d3ff4e0b95437f:src/views/Home.vue
 
 const store = useStore();
 
@@ -667,6 +664,7 @@ const returnStatusList = ref(
 ]
 
 );
+const returnCount = ref({});
 
 const filteredReturnStatusList = ref([...returnStatusList.value]);
 
@@ -676,6 +674,7 @@ onIonViewDidEnter(async() => {
   await fetchUserLoopDetails();
   await fetchUserProfile()
   await getNetSuiteRMAMapping()
+  await getLoopReturnStatusCount()
 })
 
 async function openNetsuiteModal(accountType: string ) {
@@ -895,6 +894,22 @@ async function openReturnStatusModal(returnMap: any) {
   });
   modal.present();
   await modal.onWillDismiss();
+}
+
+async function getLoopReturnStatusCount() {
+  
+  try {
+      const response = await UserService.getLoopReturnStatusCount()
+      console.log("getLoopReturnStatusCount", response);
+      if (!hasError(response)) {
+        returnCount.value = response.data.returnCountMap
+      } else {
+        throw response.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed fetch return count."));
+    }
 }
 
 function updateAppliedFilter(filter: string) {
