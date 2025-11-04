@@ -205,6 +205,25 @@ const getLoopReturnStatusCount = async (): Promise<any> => {
   });
 }
 
+const getLoopReturnStatusList = async (params: {
+  status?: string;
+  pageIndex?: number;
+  pageSize?: number;
+}): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/return/returnDetails",
+    method: "get",
+    params, 
+  });
+};
+
+const getLoopReturnStatusDetails = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/return/returnStatusDetails",
+    method: "get",
+    params: { loopReturnId: payload }
+  });
+}
 export const UserService = {
   checkPermission,
   deleteLoopCredential,
@@ -218,6 +237,8 @@ export const UserService = {
   getProfile,
   getVerifyLoopWebhook,
   getLoopReturnStatusCount,
+  getLoopReturnStatusList,
+  getLoopReturnStatusDetails,
   login,
   postNetsuiteMapping,
   registerUser,

@@ -30,13 +30,13 @@
           </ion-label>
         </div>
       </ion-item>
-      <ion-item v-for="(item , i) in dummyStatus" :key="i">
+      <ion-item v-for="(item , i) in loopReturnStatus" :key="i">
         <div class="status-grid">
           <ion-label>
             {{ item.status }}
           </ion-label>
           <ion-label>
-            {{ item.timestamp }}
+           {{ DateTime.fromMillis(item.statusDatetime).toLocal().toFormat('MM-dd-yyyy hh:mm a') }}
           </ion-label>
           <ion-label>
             {{ item.message ? item.message : '' }}
@@ -63,32 +63,11 @@ import {
 } from '@ionic/vue';
 import { closeOutline } from 'ionicons/icons';
 import { defineProps, ref } from 'vue';
+import { DateTime } from 'luxon';
 
-const props = defineProps(["returnMap"]);
-const dummyStatus = ref(
-  [
-  {
-    "timestamp": "2025-09-22 02:28",
-    "status": "Created",
-    "message": null
-  },
-  {
-    "timestamp": "2025-09-22 02:39",
-    "status": "Pending Receipt",
-    "message": null
-  },
-  {
-    "timestamp": "2025-09-22 03:13",
-    "status": "Pending Refund",
-    "message": null
-  },
-  {
-    "timestamp": "2025-09-22 08:31",
-    "status": "Error",
-    "message": "Unable to create refund for Loop Return ID: 88863737. Error: You must enter at least one line item for this transaction."
-  }
-]
-)
+const props = defineProps(["response","returnMap"]);
+
+const loopReturnStatus = ref(props.response.returnStatusDetailMap[props.returnMap.loopReturnId] || []);
 
 const cancel = () => modalController.dismiss(null, 'cancel');
 </script>

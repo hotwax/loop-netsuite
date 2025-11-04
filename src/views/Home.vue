@@ -208,46 +208,46 @@
                 <h2>{{ translate("Loop Return Statistics") }}</h2>
               </ion-item>
               <ion-item lines="none">
-                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value; updateAppliedFilter($event.target.value)"/>
+                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value; filterOnSearch($event.target.value)"/>
               </ion-item>
-              <ion-item button @click="updateAppliedFilter('all')">
+              <ion-item button @click="getLoopReturnStatusList('ALL', true)">
                 <ion-label>
                   {{ translate("All Returns") }}
                 </ion-label>
               </ion-item>
-              <ion-item button @click="updateAppliedFilter('open')">
+              <ion-item button @click="getLoopReturnStatusList('RT_OPEN', true)">
                 <ion-label>
                   {{ translate("Open Returns") }}
                 </ion-label>
-                <ion-chip color="primary">{{ returnCount.open }}</ion-chip>
+                <ion-chip outline="true" color="primary">{{ returnCount.open }}</ion-chip>
               </ion-item>
-              <ion-item button @click="updateAppliedFilter('closed')">
+              <ion-item button @click="getLoopReturnStatusList('RT_REFUNDED', true)">
                 <ion-label>
                   {{ translate("Closed Returns") }}
                 </ion-label>
-                <ion-chip color="success">{{ returnCount.closed }}</ion-chip>
+                <ion-chip outline="true" color="success">{{ returnCount.closed }}</ion-chip>
               </ion-item>
-              <ion-item button @click="updateAppliedFilter('failed')">
+              <ion-item button @click="getLoopReturnStatusList('RT_ERROR', true)">
                 <ion-label>
                   {{ translate("Failed Returns") }}
                 </ion-label>
-                <ion-chip color="danger">{{ returnCount.failed }}</ion-chip>
+                <ion-chip outline="true" color="danger">{{ returnCount.failed }}</ion-chip>
               </ion-item>
             </ion-list>
           </aside>
           <main>
             <ion-item>
               <div class="section-header ion-text-center">
-                <strong>{{"Loop Return ID"}}</strong>
-                <strong>{{"Shopify Order ID"}}</strong>
+                <strong>{{"Loop Return Id"}}</strong>
+                <strong>{{"Shopify Order Id"}}</strong>
                 <strong>{{"Shopify Order Name"}}</strong>
-                <strong>{{"Netsuite Return ID"}}</strong>
-                <strong>{{"Loop Return ID"}}</strong>
-                <strong>{{"Loop Return ID"}}</strong>
+                <strong>{{"Netsuite Return Id"}}</strong>
+                <strong>{{"Status"}}</strong>
+                <strong>{{"History"}}</strong>
               </div>
             </ion-item>
             <div class="list-item">
-              <ion-item v-for="(item, i) in filteredReturnStatusList" :key="i" class="list-item">
+              <ion-item v-for="(item, i) in returnStatusList" :key="i" class="list-item">
                 <div class="section-header ion-text-center">
                   <ion-label>{{item.loopReturnId}}</ion-label>
                   <ion-label>{{ item.shopifyOrderId }}</ion-label>
@@ -258,7 +258,7 @@
                   </ion-label>
                   <ion-label>{{item.netsuiteReturnId}}</ion-label>
                   <ion-label>
-                    <ion-badge :color="item.status === 'Open' ? 'primary' : item.status === 'Refunded' ? 'success' : 'danger'">{{ item.status }}</ion-badge>
+                  <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
                   </ion-label>
                   <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
                     <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
@@ -269,6 +269,9 @@
           </main>
         </div>
       </div>
+      <ion-infinite-scroll @ionInfinite="loadMoreReturn($event)" threshold="100px" v-show="(segmentSelected === 'syncStatus')" ref="infiniteScrollRef">
+        <ion-infinite-scroll-content loading-spinner="crescent" :loading-text="translate('Loading')" />
+      </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
@@ -287,6 +290,8 @@ import {
   IonHeader,
   IonIcon,
   IonItem,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   IonLabel,
   IonList,
   IonNote,
@@ -313,6 +318,7 @@ import ReturnStatusModal from "@/components/ReturnStatusModal.vue";
 import { hasError } from "@hotwax/oms-api";
 import logger from "@/logger";
 import { UserService } from "@/services/UserService";
+import { IonInfiniteScrollCustomEvent } from "@ionic/core";
 
 const store = useStore();
 
@@ -323,350 +329,12 @@ const profile = ref({})
 const loopWebhookVerified = ref([]);
 const netSuiteMapping = ref([]);
 const searchQuery = ref('');
-const returnStatusList = ref(
-  [
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88273645,
-    "shopifyOrderId": 11616102613360,
-    "shopifyOrderName": "#KREWE38157",
-    "netsuiteReturnId": 18138901,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88451293,
-    "shopifyOrderId": 11616102613361,
-    "shopifyOrderName": "#KREWE38158",
-    "netsuiteReturnId": 18138902,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88927461,
-    "shopifyOrderId": 11616102613362,
-    "shopifyOrderName": "#KREWE38159",
-    "netsuiteReturnId": 18138903,
-    "status": "Error"
-  },
-  {
-    "loopReturnId": 88719304,
-    "shopifyOrderId": 11616102613363,
-    "shopifyOrderName": "#KREWE38160",
-    "netsuiteReturnId": 18138904,
-    "status": "Open"
-  },
-  {
-    "loopReturnId": 88291034,
-    "shopifyOrderId": 11616102613364,
-    "shopifyOrderName": "#KREWE38161",
-    "netsuiteReturnId": 18138905,
-    "status": "Refunded"
-  },
-  {
-    "loopReturnId": 88917845,
-    "shopifyOrderId": 11616102613365,
-    "shopifyOrderName": "#KREWE38162",
-    "netsuiteReturnId": 18138906,
-    "status": "Error"
-  }
-]
-
-);
+const returnStatusList = ref([]);
 const returnCount = ref({});
-
-const filteredReturnStatusList = ref([...returnStatusList.value]);
+const currentStatus = ref("ALL");
+const pageIndex = ref(0);
+const pageSize = 50;
+const hasMore = ref(true);
 
 onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
@@ -675,6 +343,7 @@ onIonViewDidEnter(async() => {
   await fetchUserProfile()
   await getNetSuiteRMAMapping()
   await getLoopReturnStatusCount()
+  await getLoopReturnStatusList("ALL", true);
 })
 
 async function openNetsuiteModal(accountType: string ) {
@@ -887,20 +556,27 @@ async function updatePassword(profile: any ) {
 }
 
 async function openReturnStatusModal(returnMap: any) {
-  
-  const modal = await modalController.create({
-    component: ReturnStatusModal,
-    componentProps: { returnMap },
-  });
-  modal.present();
-  await modal.onWillDismiss();
+  try {
+    const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
+    if (!hasError(response)) {
+      const modal = await modalController.create({
+        component: ReturnStatusModal,
+        componentProps: { response: response.data, returnMap },
+      });
+      modal.present();
+      await modal.onWillDismiss();
+    } else {
+        throw response.data
+      }
+  } catch (error) {
+    logger.error(error)
+    showToast(translate("Failed to get Loop return details."));
+  }
 }
 
 async function getLoopReturnStatusCount() {
-  
   try {
       const response = await UserService.getLoopReturnStatusCount()
-      console.log("getLoopReturnStatusCount", response);
       if (!hasError(response)) {
         returnCount.value = response.data.returnCountMap
       } else {
@@ -908,27 +584,43 @@ async function getLoopReturnStatusCount() {
       }
     } catch (err) {
       logger.error(err)
-      showToast(translate("Failed fetch return count."));
+      showToast(translate("Failed to fetch return count."));
     }
 }
 
-function updateAppliedFilter(filter: string) {
-  if (filter === 'all') {
-    filteredReturnStatusList.value = [...returnStatusList.value];
-  } else if (filter === 'open') {
-    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Open');
-  } else if (filter === 'closed') {
-    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Refunded');
-  } else if (filter === 'failed') {
-    filteredReturnStatusList.value = returnStatusList.value.filter(item => item.status === 'Error');
-  } else {
-    const query = filter.trim().toLowerCase();
-    filteredReturnStatusList.value = returnStatusList.value.filter(item =>
-      Object.values(item).some(val =>
-        String(val).toLowerCase().includes(query)
-      )
-    );
+async function getLoopReturnStatusList(statusId: string, reset: boolean) {
+  try {
+    if (reset) {
+      pageIndex.value = 0;
+      hasMore.value = true;
+    }
+    const params: any = { pageIndex: pageIndex.value, pageSize };
+    if (statusId !== "ALL") {
+      params.statusId = statusId;
+      currentStatus.value = statusId;
+    }
+    const response = await UserService.getLoopReturnStatusList(params);
+    if (!hasError(response)) {
+      const data = response.data.returnList || [];
+      if (data.length < pageSize) hasMore.value = false;
+      returnStatusList.value = reset ? data : [...returnStatusList.value, ...data];
+    } else {
+      throw response.data;
+    }
+  } catch (err) {
+    logger.error(err);
+    showToast(translate("Failed to fetch return list."));
   }
+}
+
+async function loadMoreReturn(ev: IonInfiniteScrollCustomEvent<void>) {
+  if (!hasMore.value) {
+    ev.target.complete();
+    return;
+  }
+  pageIndex.value++;
+  await getLoopReturnStatusList(currentStatus.value, false);
+  ev.target.complete();
 }
 
 </script>
