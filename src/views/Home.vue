@@ -208,7 +208,7 @@
                 <h2>{{ translate("Loop Return Statistics") }}</h2>
               </ion-item>
               <ion-item lines="none">
-                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value; filterOnSearch($event.target.value)"/>
+                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value"/>
               </ion-item>
               <ion-item button @click="getLoopReturnStatusList('ALL', true)">
                 <ion-label>
@@ -238,12 +238,12 @@
           <main>
             <ion-item>
               <div class="section-header ion-text-center">
-                <strong>{{"Loop Return Id"}}</strong>
-                <strong>{{"Shopify Order Id"}}</strong>
-                <strong>{{"Shopify Order Name"}}</strong>
-                <strong>{{"Netsuite Return Id"}}</strong>
-                <strong>{{"Status"}}</strong>
-                <strong>{{"History"}}</strong>
+                <strong>{{translate("Loop Return Id")}}</strong>
+                <strong>{{translate("Shopify Order Id")}}</strong>
+                <strong>{{translate("Shopify Order Name")}}</strong>
+                <strong>{{translate("Netsuite Return Id")}}</strong>
+                <strong>{{translate("Status")}}</strong>
+                <strong>{{translate("History")}}</strong>
               </div>
             </ion-item>
             <div class="list-item">

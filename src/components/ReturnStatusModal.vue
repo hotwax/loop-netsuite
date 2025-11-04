@@ -13,20 +13,20 @@
     <ion-list>
       <ion-item>
         <ion-label>
-          {{ "Loop Return Id" }}
+          {{ translate("Loop Return Id") }}
         </ion-label>
         <p slot="end">{{ props.returnMap.loopReturnId }}</p>
       </ion-item>
       <ion-item>
         <div class="status-grid">
           <ion-label>
-            {{ "Status" }}
+            {{ translate("Status") }}
           </ion-label>
           <ion-label>
-            {{ "Date" }}
+            {{ translate("Date") }}
           </ion-label>
           <ion-label>
-            {{ "Change Reason" }}
+            {{ translate("Change Reason") }}
           </ion-label>
         </div>
       </ion-item>
@@ -36,7 +36,7 @@
             {{ item.status }}
           </ion-label>
           <ion-label>
-           {{ DateTime.fromMillis(item.statusDatetime).toLocal().toFormat('MM-dd-yyyy hh:mm a') }}
+            {{ formatToLocalDateTime(item.statusDatetime) }}
           </ion-label>
           <ion-label>
             {{ item.message ? item.message : '' }}
@@ -68,10 +68,17 @@ import { DateTime } from 'luxon';
 const props = defineProps(["response","returnMap"]);
 
 const loopReturnStatus = ref(props.response.returnStatusDetailMap[props.returnMap.loopReturnId] || []);
+function formatToLocalDateTime(timestamp: number) {
+  if (!timestamp) return '';
+  return DateTime
+    .fromMillis(timestamp)
+    .toLocal()
+    .toFormat('MM-dd-yyyy hh:mm a');
+}
 
 const cancel = () => modalController.dismiss(null, 'cancel');
 </script>
-<style>
+<style scoped>
 .status-grid {
   width: 100%;
   display: grid;

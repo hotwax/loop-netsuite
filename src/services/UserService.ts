@@ -224,6 +224,7 @@ const getLoopReturnStatusDetails = async (payload: any): Promise<any> => {
     params: { loopReturnId: payload }
   });
 }
+
 export const UserService = {
   checkPermission,
   deleteLoopCredential,
