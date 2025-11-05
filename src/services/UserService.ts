@@ -171,13 +171,20 @@ const syncNetsuiteMapping = async (payload: any): Promise<any> => {
   });
 }
 
+const syncAllNetsuiteMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/syncAllIntegrationTypeMapping",
+    method: "POST",
+    data: { accountId: payload }
+  });
+}
+
 const deleteIntegrationTypeMappings = async (payload: any): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/organizations/integrationTypeMappings",
     method: "delete",
     data: {
-      integrationMappingId: payload.integrationMappingId,
-      integrationTypeId: payload.integrationTypeId
+      integrationMappingId: payload.integrationMappingId
     }
   });
 }
@@ -244,6 +251,7 @@ export const UserService = {
   postNetsuiteMapping,
   registerUser,
   syncNetsuiteMapping,
+  syncAllNetsuiteMapping,
   uploadLoopCredentials,
   uploadNetSuiteCredentials,
   updatePassword,
