@@ -5,7 +5,7 @@
         <ion-item lines="none" slot="start">
           <h3>{{ profile.organizationName }}</h3>
         </ion-item>
-          <ion-segment v-model="segmentSelected">
+          <ion-segment v-model="segmentSelected" @ion-change="segmentChanged">
             <ion-segment-button value="configuration">
               <ion-label>{{ translate("Configuration") }}</ion-label>
             </ion-segment-button>
@@ -210,28 +210,28 @@
               <ion-item lines="none">
                 <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value"/>
               </ion-item>
-              <ion-item button @click="getLoopReturnStatusList('ALL', true)">
+              <ion-item button @click="getLoopReturnStatusList('ALL')">
                 <ion-label>
                   {{ translate("All Returns") }}
                 </ion-label>
               </ion-item>
-              <ion-item button @click="getLoopReturnStatusList('RT_OPEN', true)">
+              <ion-item button @click="getLoopReturnStatusList('RT_OPEN')">
                 <ion-label>
                   {{ translate("Open Returns") }}
                 </ion-label>
-                <ion-chip outline="true" color="primary">{{ returnCount.open }}</ion-chip>
+                <ion-chip slot="end" outline="true" color="primary">{{ returnCount.open }}</ion-chip>
               </ion-item>
-              <ion-item button @click="getLoopReturnStatusList('RT_REFUNDED', true)">
+              <ion-item button @click="getLoopReturnStatusList('RT_REFUNDED')">
                 <ion-label>
                   {{ translate("Closed Returns") }}
                 </ion-label>
-                <ion-chip outline="true" color="success">{{ returnCount.closed }}</ion-chip>
+                <ion-chip slot="end" outline="true" color="success">{{ returnCount.closed }}</ion-chip>
               </ion-item>
-              <ion-item button @click="getLoopReturnStatusList('RT_ERROR', true)">
+              <ion-item button @click="getLoopReturnStatusList('RT_ERROR')">
                 <ion-label>
                   {{ translate("Failed Returns") }}
                 </ion-label>
-                <ion-chip outline="true" color="danger">{{ returnCount.failed }}</ion-chip>
+                <ion-chip slot="end" outline="true" color="danger">{{ returnCount.failed }}</ion-chip>
               </ion-item>
             </ion-list>
           </aside>
@@ -252,14 +252,12 @@
                   <ion-label>{{item.loopReturnId}}</ion-label>
                   <ion-label>{{ item.shopifyOrderId }}</ion-label>
                   <ion-label>
-                    <ion-chip outline>
-                      {{ item.shopifyOrderName }}
-                    </ion-chip>
+                    {{ item.shopifyOrderName }}
                   </ion-label>
                   <ion-label>{{item.netsuiteReturnId}}</ion-label>
-                  <ion-label>
-                  <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
-                  </ion-label>
+                  <div>
+                    <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
+                  </div>
                   <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
                     <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
                   </ion-button>
@@ -269,7 +267,7 @@
           </main>
         </div>
       </div>
-      <ion-infinite-scroll @ionInfinite="loadMoreReturn($event)" threshold="100px" v-show="(segmentSelected === 'syncStatus')" ref="infiniteScrollRef">
+      <ion-infinite-scroll @ionInfinite="loadMoreReturns($event)" threshold="100px" v-show="(segmentSelected === 'syncStatus')" ref="infiniteScrollRef">
         <ion-infinite-scroll-content loading-spinner="crescent" :loading-text="translate('Loading')" />
       </ion-infinite-scroll>
     </ion-content>
@@ -300,6 +298,7 @@ import {
   IonSegmentButton,
   IonThumbnail,
   IonToolbar,
+  IonSearchbar,
   modalController,
   onIonViewDidEnter
 } from "@ionic/vue";
@@ -333,8 +332,7 @@ const returnStatusList = ref([]);
 const returnCount = ref({});
 const currentStatus = ref("ALL");
 const pageIndex = ref(0);
-const pageSize = 50;
-const hasMore = ref(true);
+const loadMore = ref(true);
 
 onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
@@ -342,9 +340,15 @@ onIonViewDidEnter(async() => {
   await fetchUserLoopDetails();
   await fetchUserProfile()
   await getNetSuiteRMAMapping()
-  await getLoopReturnStatusCount()
-  await getLoopReturnStatusList("ALL", true);
 })
+
+const segmentChanged = async(event: any) => {
+  segmentSelected.value = event.detail.value;
+  if (segmentSelected.value === 'syncStatus') {
+    await getLoopReturnStatusCount()
+    await getLoopReturnStatusList("ALL");
+  }
+};
 
 async function openNetsuiteModal(accountType: string ) {
   const modal = await modalController.create({
@@ -588,21 +592,23 @@ async function getLoopReturnStatusCount() {
     }
 }
 
-async function getLoopReturnStatusList(statusId: string, reset: boolean) {
+async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize = 50) {
   try {
     if (reset) {
       pageIndex.value = 0;
-      hasMore.value = true;
-    }
-    const params: any = { pageIndex: pageIndex.value, pageSize };
-    if (statusId !== "ALL") {
-      params.statusId = statusId;
+      loadMore.value = true;
       currentStatus.value = statusId;
     }
+
+    const params: any = { pageIndex: pageIndex.value, pageSize };
+    if (statusId && statusId !== "ALL") {
+      params.statusId = statusId;
+    }
+
     const response = await UserService.getLoopReturnStatusList(params);
     if (!hasError(response)) {
-      const data = response.data.returnList || [];
-      if (data.length < pageSize) hasMore.value = false;
+      const data = response.data?.returnList || [];
+      if (data.length < pageSize) loadMore.value = false;
       returnStatusList.value = reset ? data : [...returnStatusList.value, ...data];
     } else {
       throw response.data;
@@ -613,8 +619,8 @@ async function getLoopReturnStatusList(statusId: string, reset: boolean) {
   }
 }
 
-async function loadMoreReturn(ev: IonInfiniteScrollCustomEvent<void>) {
-  if (!hasMore.value) {
+async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
+  if (!loadMore.value) {
     ev.target.complete();
     return;
   }

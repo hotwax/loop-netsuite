@@ -15,7 +15,7 @@
         <ion-label>
           {{ translate("Loop Return Id") }}
         </ion-label>
-        <p slot="end">{{ props.returnMap.loopReturnId }}</p>
+        <ion-label slot="end">{{ props.returnMap.loopReturnId }}</ion-label>
       </ion-item>
       <ion-item>
         <div class="status-grid">
