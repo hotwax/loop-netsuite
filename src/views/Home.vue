@@ -5,7 +5,7 @@
         <ion-item lines="none" slot="start">
           <h3>{{ profile.organizationName }}</h3>
         </ion-item>
-          <ion-segment v-model="segmentSelected">
+          <ion-segment v-model="segmentSelected" @ion-change="segmentChanged">
             <ion-segment-button value="configuration">
               <ion-label>{{ translate("Configuration") }}</ion-label>
             </ion-segment-button>
@@ -201,7 +201,73 @@
         </ion-card>
       </div>
       <div v-if="segmentSelected === 'syncStatus'">
+        <div class="find">
+          <aside>
+            <ion-list>
+              <ion-item lines="none">
+                <h2>{{ translate("Loop Return Statistics") }}</h2>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value"/>
+              </ion-item>
+              <ion-item button @click="getLoopReturnStatusList('ALL')">
+                <ion-label>
+                  {{ translate("All Returns") }}
+                </ion-label>
+              </ion-item>
+              <ion-item button @click="getLoopReturnStatusList('RT_OPEN')">
+                <ion-label>
+                  {{ translate("Open Returns") }}
+                </ion-label>
+                <ion-chip slot="end" outline="true" color="primary">{{ returnCount.open }}</ion-chip>
+              </ion-item>
+              <ion-item button @click="getLoopReturnStatusList('RT_REFUNDED')">
+                <ion-label>
+                  {{ translate("Closed Returns") }}
+                </ion-label>
+                <ion-chip slot="end" outline="true" color="success">{{ returnCount.closed }}</ion-chip>
+              </ion-item>
+              <ion-item button @click="getLoopReturnStatusList('RT_ERROR')">
+                <ion-label>
+                  {{ translate("Failed Returns") }}
+                </ion-label>
+                <ion-chip slot="end" outline="true" color="danger">{{ returnCount.failed }}</ion-chip>
+              </ion-item>
+            </ion-list>
+          </aside>
+          <main>
+            <ion-item>
+              <div class="section-header ion-text-center">
+                <strong>{{translate("Loop Return Id")}}</strong>
+                <strong>{{translate("Shopify Order Id")}}</strong>
+                <strong>{{translate("Shopify Order Name")}}</strong>
+                <strong>{{translate("Netsuite Return Id")}}</strong>
+                <strong>{{translate("Status")}}</strong>
+                <strong>{{translate("History")}}</strong>
+              </div>
+            </ion-item>
+            <ion-item v-for="(item, i) in returnStatusList" :key="i" class="list-item">
+              <div class="section-header ion-text-center">
+                <ion-label>{{item.loopReturnId}}</ion-label>
+                <ion-label>{{ item.shopifyOrderId }}</ion-label>
+                <ion-label>
+                  {{ item.shopifyOrderName }}
+                </ion-label>
+                <ion-label>{{item.netsuiteReturnId}}</ion-label>
+                <div>
+                  <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
+                </div>
+                <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
+                  <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+          </main>
+        </div>
       </div>
+      <ion-infinite-scroll @ionInfinite="loadMoreReturns($event)" threshold="100px" v-show="(segmentSelected === 'syncStatus')" ref="infiniteScrollRef">
+        <ion-infinite-scroll-content loading-spinner="crescent" :loading-text="translate('Loading')" />
+      </ion-infinite-scroll>
     </ion-content>
   </ion-page>
 </template>
@@ -216,9 +282,12 @@ import {
   IonCardTitle,
   IonChip,
   IonContent,
+  IonBadge,
   IonHeader,
   IonIcon,
   IonItem,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   IonLabel,
   IonList,
   IonNote,
@@ -227,6 +296,7 @@ import {
   IonSegmentButton,
   IonThumbnail,
   IonToolbar,
+  IonSearchbar,
   modalController,
   onIonViewDidEnter
 } from "@ionic/vue";
@@ -234,16 +304,18 @@ import {
 import { ref } from "vue";
 import { useStore } from "@/store";
 import { copyToClipboard, showToast } from "@/utils";
-import { addOutline, trashOutline } from "ionicons/icons";
+import { addOutline, openOutline, trashOutline } from "ionicons/icons";
 import NetSuiteModal from "@/components/NetSuiteModal.vue";
 import LoopModal from "@/components/LoopModal.vue";
 import { translate } from '@/i18n';
 import NetSuiteMappingModal from "@/components/NetSuiteMappingModal.vue";
 import UpdateUserLoginModal from "@/components/UpdateUserLoginModal.vue";
 import ChangePasswordModal from "@/components/ChangePasswordModal.vue";
+import ReturnStatusModal from "@/components/ReturnStatusModal.vue";
 import { hasError } from "@hotwax/oms-api";
 import logger from "@/logger";
 import { UserService } from "@/services/UserService";
+import { IonInfiniteScrollCustomEvent } from "@ionic/core";
 
 const store = useStore();
 
@@ -253,14 +325,29 @@ const loopCredentialsList = ref([]);
 const profile = ref({})
 const loopWebhookVerified = ref([]);
 const netSuiteMapping = ref([]);
+const searchQuery = ref('');
+const returnStatusList = ref([]);
+const returnCount = ref({});
+const currentStatus = ref("ALL");
+const pageIndex = ref(0);
+const loadMore = ref(true);
 
 onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
   await fetchUserNetSuiteDetails();
   await fetchUserLoopDetails();
-  await fetchUserProfile()
   await getNetSuiteRMAMapping()
 })
+
+const segmentChanged = async(event: any) => {
+  segmentSelected.value = event.detail.value;
+  if (segmentSelected.value === 'syncStatus') {
+    await getLoopReturnStatusCount()
+    await getLoopReturnStatusList("ALL");
+  } else if (segmentSelected.value === 'account') {
+    await fetchUserProfile()
+  }
+};
 
 async function openNetsuiteModal(accountType: string ) {
   const modal = await modalController.create({
@@ -470,22 +557,93 @@ async function updatePassword(profile: any ) {
     }
   }
 }
+
+async function openReturnStatusModal(returnMap: any) {
+  try {
+    const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
+    if (!hasError(response)) {
+      const modal = await modalController.create({
+        component: ReturnStatusModal,
+        componentProps: { response: response.data, returnMap },
+      });
+      modal.present();
+      await modal.onWillDismiss();
+    } else {
+        throw response.data
+      }
+  } catch (error) {
+    logger.error(error)
+    showToast(translate("Failed to get Loop return details."));
+  }
+}
+
+async function getLoopReturnStatusCount() {
+  try {
+      const response = await UserService.getLoopReturnStatusCount()
+      if (!hasError(response)) {
+        returnCount.value = response.data.returnCountMap
+      } else {
+        throw response.data
+      }
+    } catch (err) {
+      logger.error(err)
+      showToast(translate("Failed to fetch return count."));
+    }
+}
+
+async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize = 50) {
+  try {
+    if (reset) {
+      pageIndex.value = 0;
+      loadMore.value = true;
+      currentStatus.value = statusId;
+    }
+
+    const params: any = { pageIndex: pageIndex.value, pageSize };
+    if (statusId && statusId !== "ALL") {
+      params.statusId = statusId;
+    }
+
+    const response = await UserService.getLoopReturnStatusList(params);
+    if (!hasError(response)) {
+      const data = response.data?.returnList || [];
+      if (data.length < pageSize) loadMore.value = false;
+      returnStatusList.value = reset ? data : [...returnStatusList.value, ...data];
+    } else {
+      throw response.data;
+    }
+  } catch (err) {
+    logger.error(err);
+    showToast(translate("Failed to fetch return list."));
+  }
+}
+
+async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
+  if (!loadMore.value) {
+    ev.target.complete();
+    return;
+  }
+  pageIndex.value++;
+  await getLoopReturnStatusList(currentStatus.value, false);
+  ev.target.complete();
+}
+
 </script>
 <style scoped>
-@media (min-width: 531px) {
-  section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
-  }
+h1 {
+  margin: 24px 24px 0;
+}
+
+aside {
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .ion-card-width {
   width: 100%;
   max-width: 500px;
   margin: 10px auto
-}
-h1 {
-  margin: 24px 24px 0;
 }
 
 .item-end {
@@ -511,5 +669,26 @@ h1 {
 
 .ion-text-center {
   text-align: center;
+}
+
+.section-header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 2fr); 
+  align-items: center;
+  padding: 14px;
+  transition: background-color 0.3s; 
+}
+
+ion-item.list-item:hover .section-header {
+  background-color: #f0f0f0; 
+  cursor: pointer;
+}
+
+@media (min-width: 531px) {
+  section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
+  }
 }
 </style>
