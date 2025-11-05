@@ -246,24 +246,22 @@
                 <strong>{{translate("History")}}</strong>
               </div>
             </ion-item>
-            <div class="list-item">
-              <ion-item v-for="(item, i) in returnStatusList" :key="i" class="list-item">
-                <div class="section-header ion-text-center">
-                  <ion-label>{{item.loopReturnId}}</ion-label>
-                  <ion-label>{{ item.shopifyOrderId }}</ion-label>
-                  <ion-label>
-                    {{ item.shopifyOrderName }}
-                  </ion-label>
-                  <ion-label>{{item.netsuiteReturnId}}</ion-label>
-                  <div>
-                    <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
-                  </div>
-                  <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
-                    <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
-                  </ion-button>
+            <ion-item v-for="(item, i) in returnStatusList" :key="i" class="list-item">
+              <div class="section-header ion-text-center">
+                <ion-label>{{item.loopReturnId}}</ion-label>
+                <ion-label>{{ item.shopifyOrderId }}</ion-label>
+                <ion-label>
+                  {{ item.shopifyOrderName }}
+                </ion-label>
+                <ion-label>{{item.netsuiteReturnId}}</ion-label>
+                <div>
+                  <ion-badge :color="item.status === 'Refunded' ? 'success' : item.status === 'Error' ? 'danger' : ''">{{ item.status }}</ion-badge>
                 </div>
-              </ion-item>
-            </div>
+                <ion-button fill="clear" size="default" @click="openReturnStatusModal(item)">
+                  <ion-icon slot="icon-only" :icon="openOutline"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
           </main>
         </div>
       </div>
@@ -338,7 +336,6 @@ onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
   await fetchUserNetSuiteDetails();
   await fetchUserLoopDetails();
-  await fetchUserProfile()
   await getNetSuiteRMAMapping()
 })
 
@@ -347,6 +344,8 @@ const segmentChanged = async(event: any) => {
   if (segmentSelected.value === 'syncStatus') {
     await getLoopReturnStatusCount()
     await getLoopReturnStatusList("ALL");
+  } else if (segmentSelected.value === 'account') {
+    await fetchUserProfile()
   }
 };
 
@@ -631,20 +630,20 @@ async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
 
 </script>
 <style scoped>
-@media (min-width: 531px) {
-  section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
-  }
+h1 {
+  margin: 24px 24px 0;
+}
+
+aside {
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .ion-card-width {
   width: 100%;
   max-width: 500px;
   margin: 10px auto
-}
-h1 {
-  margin: 24px 24px 0;
 }
 
 .item-end {
@@ -672,12 +671,6 @@ h1 {
   text-align: center;
 }
 
-aside {
-  position: sticky;
-  top: 0;
-  overflow-y: auto;
-}
-
 .section-header {
   width: 100%;
   display: grid;
@@ -690,5 +683,12 @@ aside {
 ion-item.list-item:hover .section-header {
   background-color: #f0f0f0; 
   cursor: pointer;
+}
+
+@media (min-width: 531px) {
+  section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(531px, 1fr));
+  }
 }
 </style>
