@@ -49,8 +49,8 @@
                       {{ translate(credentials.accountType) }}
                       <p>{{ credentials.remoteId }}</p>
                     </ion-label>
-                    <ion-button class="ion-text-center ion-text-nowrap" fill="outline" size="small" @click="getAPIKey(credentials)">
-                      {{ translate("Generate API Key")}}
+                    <ion-button class="ion-text-center ion-text-nowrap" fill="outline" size="small" @click="postAPIKey(credentials)">
+                      {{ translate(credentials.systemMessageRemoteId in loginKeyMap ? "Refresh API Key" : "Generate API Key") }} 
                     </ion-button>
                     <ion-note class="ion-text-center" v-if="credentials.verified === 'Y'" color="success">
                       {{ translate("Verified") }}
@@ -93,11 +93,11 @@
                       {{ translate(loopCredentials.accountType) }}
                       <p>{{ loopCredentials.remoteId }}</p>
                     </ion-label>
-                    <ion-note class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="success">
-                      {{ translate("Active") }}
-                    </ion-note>
+                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="deleteLoopWebHook(loopCredentials)">
+                      {{ translate("Unsubscribe Webhook") }}
+                    </ion-button>
                     <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
-                      {{ translate("Subscribe") }}
+                      {{ translate("Subscribe Webhook") }}
                     </ion-button>
                     <ion-button fill="clear" size="default" color="medium" @click="deleteLoopCredential(loopCredentials)">
                       <ion-icon slot="icon-only" :icon="trashOutline" ></ion-icon>
@@ -182,7 +182,7 @@
               <ion-label slot="end">{{ profile.emailAddress }}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-label>{{translate("Username")}}</ion-label>
+              <ion-label>{{translate("User Name")}}</ion-label>
               <ion-label slot="end">{{ profile.username }}</ion-label>
             </ion-item>
             <ion-item>
@@ -331,12 +331,14 @@ const returnCount = ref({});
 const currentStatus = ref("ALL");
 const pageIndex = ref(0);
 const loadMore = ref(true);
+const loginKeyMap = ref({});
 
 onIonViewDidEnter(async() => {
   await getVerifyLoopWebhook()
   await fetchUserNetSuiteDetails();
   await fetchUserLoopDetails();
-  await getNetSuiteRMAMapping()
+  await getNetSuiteRMAMapping();
+  await getAPIKey()
 })
 
 const segmentChanged = async(event: any) => {
@@ -448,6 +450,21 @@ async function deleteLoopCredential(data: any) {
   }
 }
 
+async function deleteLoopWebHook(data: any) {
+  try {
+    const response = await UserService.deleteLoopWebHook(data);
+    if (!hasError(response)) {
+      showToast(translate("Loop Webhook Unscrible successfully."));
+      getVerifyLoopWebhook()
+    } else {
+      throw response.data
+    }
+  } catch (err) {
+    logger.error(err)
+    showToast(translate("Failed to Unscrible Loop webhook."));
+  }
+}
+
 async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
   const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
   if (response) {
@@ -487,16 +504,28 @@ async function getVerifyLoopWebhook() {
   }
 }
 
-async function getAPIKey(credentials: any) {
-  const response = await store.dispatch('user/getAPIKey', credentials);
+async function getAPIKey() {
+  try {
+    const response = await UserService.getAPIKey();
+    if (response) {
+      loginKeyMap.value = response.data.loginKeyMap;
+    }
+  } catch (error) {
+    logger.error(error)
+    showToast(translate("Failed to get apiKey."));
+  }
+}
+
+async function postAPIKey(credentials: any) {
+  const response = await store.dispatch('user/postAPIKey', credentials);
   if (response) {
     const alert = await alertController.create({
       header: 'Refresh API Key',
       subHeader: `An API Key has been generated for NetSuite Account ID ${credentials.remoteId}.
-                  Please copy and save this key now — it will only be shown once.<br/>
-                  Use this key to create an API Secret record in NetSuite.<br />
-
-                  Your API Key is: ${response.loginKey}`,
+      Please copy and save this key now — it will only be shown once.<br/>
+      Use this key to create an API Secret record in NetSuite.<br />
+      
+      Your API Key is: ${response.loginKey}`,
       buttons: [
         {
           text: 'copy API Key',
@@ -505,6 +534,7 @@ async function getAPIKey(credentials: any) {
         },
       ]
     });
+    getAPIKey()
     await alert.present();
   } else {
     showToast(translate("Unable to get NetSuite apiKey. Please try again."));
@@ -662,7 +692,7 @@ aside {
 .item-grid-loop {
   width: 100%;
   display: grid;
-  grid-template-columns: 8fr 2fr 2fr;
+  grid-template-columns: 5fr 5fr 2fr;
   align-items: center;
 
 }

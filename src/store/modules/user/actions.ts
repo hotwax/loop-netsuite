@@ -224,9 +224,9 @@ const actions: ActionTree<UserState, RootState> = {
       showToast(translate("Unable to verify Loop webhook subscribe. Please try again either delete the credential and add it again."));
     }
   },
-  async getAPIKey({ commit, dispatch }, payload) {
+  async postAPIKey({ commit, dispatch }, payload) {
     try {
-      const resp = await UserService.getAPIKey(payload)
+      const resp = await UserService.postAPIKey(payload)
       if (!hasError(resp) && resp.status === 200) {
         return resp.data;
       } else {

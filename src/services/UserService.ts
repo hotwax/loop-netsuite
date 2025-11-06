@@ -124,6 +124,16 @@ const verifyloopCredential = async (payload: any): Promise<any> => {
   });
 }
 
+const deleteLoopWebHook = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
+    method: "delete",
+    data: {
+      systemMessageRemoteId: payload.systemMessageRemoteId,
+    }
+  });
+}
+
 const getVerifyLoopWebhook = async (): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/organizations/subscribeLoopWebhook",
@@ -131,7 +141,7 @@ const getVerifyLoopWebhook = async (): Promise<any> => {
   });
 }
 
-const getAPIKey = async (payload: any): Promise<any> => {
+const postAPIKey = async (payload: any): Promise<any> => {
   return api({
     url: `/netsuite-loop-connector/organizations/apiKey`,
     method: "post",
@@ -141,6 +151,12 @@ const getAPIKey = async (payload: any): Promise<any> => {
   });
 }
 
+const getAPIKey = async (): Promise<any> => {
+  return api({
+    url: `/netsuite-loop-connector/organizations/apiKey`,
+    method: "get",
+  });
+}
 const getNetSuiteRMATypeMapping = async (): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/organizations/returnIntegrationTypeMapping",
@@ -228,6 +244,7 @@ const getLoopReturnStatusDetails = async (payload: any): Promise<any> => {
 export const UserService = {
   checkPermission,
   deleteLoopCredential,
+  deleteLoopWebHook,
   deleteNetSuiteCredential,
   deleteIntegrationTypeMappings,
   getAPIKey,
@@ -241,6 +258,7 @@ export const UserService = {
   getLoopReturnStatusList,
   getLoopReturnStatusDetails,
   login,
+  postAPIKey,
   postNetsuiteMapping,
   registerUser,
   syncNetsuiteMapping,
