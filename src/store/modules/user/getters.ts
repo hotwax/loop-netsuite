@@ -18,6 +18,9 @@ const getters: GetterTree <UserState, RootState> = {
     getInstanceUrl (state) {
         const baseUrl = process.env.VUE_APP_BASE_URL;
         return baseUrl ? baseUrl : state.instanceUrl;
+    },
+    getOrganizationDetails(state) {
+        return state.userOrganizationsDetails;
     }
 }
 export default getters;

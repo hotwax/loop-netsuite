@@ -3,7 +3,7 @@
     <ion-header :translucent="true" >
       <ion-toolbar>
         <ion-item lines="none" slot="start">
-          <h3>{{ profile.organizationName }}</h3>
+          <h3>{{ organizationDetails.organizationName }}</h3>
         </ion-item>
           <ion-segment v-model="segmentSelected" @ion-change="segmentChanged">
             <ion-segment-button value="configuration">
@@ -20,7 +20,6 @@
     </ion-header>
     <ion-content ref="contentRef" :scroll-events="true" >
       <div v-if="segmentSelected === 'configuration'">
-        <h1>{{ translate("Connect") }}</h1>
         <section class="ion-padding-horizontal">
           <div>
             <ion-card>
@@ -92,7 +91,7 @@
                     <ion-label>
                       {{ translate(loopCredentials.accountType) }}
                     </ion-label>
-                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="confirmDelete(() => deleteLoopWebHook(loopCredentials),'Are you sure you want to unsubscribe from Loop webhook?')">
+                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="confirmDelete(() => deleteLoopWebHook(loopCredentials),'Do you want to unsubscribe Loop webhook?')">
                       {{ translate("Unsubscribe") }}
                     </ion-button>
                     <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
@@ -113,7 +112,7 @@
             <ion-card>
               <ion-card-header>
                 <ion-item lines="none">
-                  <ion-card-title>{{ translate("NetSuite integration mapping") }}</ion-card-title>
+                  <ion-card-title>{{ translate("NetSuite Integration Mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true">
@@ -126,29 +125,36 @@
           </div>
         </section>
         <section class="ion-padding-horizontal" >
-          <div v-for="(credentials, index) in nsCredentialsList" :key="index">
+          <div v-for="(credentials, index) in nsCredentialsList" :key="index"> 
             <ion-card>
               <ion-card-header>
-                <ion-card-title>{{ translate(`NetSuite ${credentials.accountType} Mapping`)}}</ion-card-title>
-                <ion-card-subtitle>{{ credentials.remoteId }}</ion-card-subtitle>
+                <ion-item lines="none">
+                  <ion-label>
+                    {{ translate(`NetSuite ${credentials.accountType} Mapping`)}}
+                    <p>{{ credentials.remoteId }}</p>
+                  </ion-label>
+                  <ion-button slot="end" fill="outline" :disabled="netSuiteMapping[credentials.systemMessageRemoteId]?.[0]?.scriptEndPoint != 'Y'" @click="syncAllNetsuiteMapping(credentials.systemMessageRemoteId)">
+                    {{ translate('Sync All') }}
+                  </ion-button>
+                </ion-item>
               </ion-card-header>
               <ion-list v-if="netSuiteMapping[credentials.systemMessageRemoteId] && netSuiteMapping[credentials.systemMessageRemoteId].length > 0">
                 <ion-item>
-                  <div class="item-grid">
-                    <ion-label> {{ translate("Mapping Key") }}</ion-label>
+                  <div class="netsuite-mapping-grid">
+                    <ion-label> {{ translate("Name") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Value") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Status") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Action") }} </ion-label>
                   </div>
                 </ion-item>
                 <ion-item  v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
-                  <div class="item-grid">
+                  <div class="netsuite-mapping-grid">
                     <ion-label>
                       {{ mapping.description }}
                     </ion-label>
                     <ion-label class="ion-text-center">{{ mapping.mappingValue }}</ion-label>
                     <ion-note class="ion-text-center" v-if="mapping.synced == 'Y'" color="success">{{ translate("Synced") }}</ion-note>
-                    <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
+                    <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" :disabled="mapping.scriptEndPoint != 'Y'" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
                       {{ translate("Sync") }}
                     </ion-button>
                     <ion-button fill="clear" size="default" color="medium" @click="confirmDelete(() => deleteIntegrationTypeMappings(mapping))">
@@ -168,34 +174,34 @@
         <ion-card class="ion-card-width">
           <ion-card-header>
             <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
-            <ion-card-subtitle>{{ profile.organizationName }}</ion-card-subtitle>
+            <ion-card-subtitle>{{ organizationDetails.organizationName }}</ion-card-subtitle>
           </ion-card-header>
           <ion-list lines="full">
             <ion-item>
               <ion-label>{{translate("User Id")}}</ion-label>
-              <ion-label slot="end">{{ profile.userId }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails.userId }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Full Name")}} </ion-label>
-              <ion-label slot="end">{{ profile.userFullName }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails.userFullName }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Email")}}</ion-label>
-              <ion-label slot="end">{{ profile.emailAddress }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails.emailAddress }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("User Name")}}</ion-label>
-              <ion-label slot="end">{{ profile.username }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails.username }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Organization Name")}}</ion-label>
-              <ion-label slot="end">{{ profile.organizationName }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails.organizationName }}</ion-label>
             </ion-item>
             <ion-item lines="none">
-              <ion-button slot="end" color="warning" fill="outline" @click="updatePassword(profile)">
+              <ion-button slot="end" color="warning" fill="outline" @click="updatePassword(organizationDetails)">
                 {{ translate("Change Password") }}
               </ion-button>
-              <ion-button slot="end" fill="outline" @click="updateProfile(profile)">
+              <ion-button slot="end" fill="outline" @click="updateProfile(organizationDetails)">
                 {{ translate("Update Profile") }}
               </ion-button>
             </ion-item>
@@ -216,22 +222,23 @@
                 <ion-label>
                   {{ translate("All Returns") }}
                 </ion-label>
+                <ion-chip slot="end" outline="true" color="dark">{{ returnTotalCount }}</ion-chip>
               </ion-item>
               <ion-item button @click="getLoopReturnStatusList('RT_OPEN')">
                 <ion-label>
-                  {{ translate("Open Returns") }}
+                  {{ translate("Open") }}
                 </ion-label>
                 <ion-chip slot="end" outline="true" color="primary">{{ returnCount.open }}</ion-chip>
               </ion-item>
               <ion-item button @click="getLoopReturnStatusList('RT_REFUNDED')">
                 <ion-label>
-                  {{ translate("Closed Returns") }}
+                  {{ translate("Closed") }}
                 </ion-label>
                 <ion-chip slot="end" outline="true" color="success">{{ returnCount.closed }}</ion-chip>
               </ion-item>
               <ion-item button @click="getLoopReturnStatusList('RT_ERROR')">
                 <ion-label>
-                  {{ translate("Failed Returns") }}
+                  {{ translate("Failed") }}
                 </ion-label>
                 <ion-chip slot="end" outline="true" color="danger">{{ returnCount.failed }}</ion-chip>
               </ion-item>
@@ -303,7 +310,7 @@ import {
   onIonViewDidEnter
 } from "@ionic/vue";
 
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "@/store";
 import { copyToClipboard, showToast } from "@/utils";
 import { addOutline, openOutline, pencilOutline, trashOutline } from "ionicons/icons";
@@ -325,17 +332,19 @@ const store = useStore();
 const segmentSelected = ref('configuration');
 const nsCredentialsList = ref([]);
 const loopCredentialsList = ref([]);
-const profile = ref({})
 const loopWebhookVerified = ref([]);
 const netSuiteMapping = ref([]);
 const searchQuery = ref('');
 const returnStatusList = ref([]);
 const returnCount = ref({});
+const returnTotalCount = ref(0);
 const currentStatus = ref("ALL");
 const pageIndex = ref(0);
 const loadMore = ref(true);
 const loginKeyMap = ref({});
-const isLoading = ref(false);
+
+const organizationDetails = computed(() => store.getters['user/getOrganizationDetails']);
+
 
 onIonViewDidEnter(async() => {
   emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
@@ -344,6 +353,7 @@ onIonViewDidEnter(async() => {
   await fetchUserLoopDetails();
   await getNetSuiteRMAMapping();
   await getAPIKey()
+  await fetchUserProfile();
   emitter.emit("dismissLoader");
 })
 
@@ -354,11 +364,7 @@ const segmentChanged = async(event: any) => {
     await getLoopReturnStatusCount()
     await getLoopReturnStatusList("ALL");
     emitter.emit("dismissLoader");
-  } else if (segmentSelected.value === 'account') {
-    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
-    await fetchUserProfile()
-    emitter.emit("dismissLoader");
-  }
+  } 
 };
 
 async function openNetsuiteModal(accountType: string ) {
@@ -419,7 +425,6 @@ async function openLoopModal(accountType: string ) {
 
 async function fetchUserProfile() {
   const response = await store.dispatch('user/getProfile');
-  profile.value = response.data.organizationDetailList[0];
 }
 
 async function fetchUserNetSuiteDetails() {
@@ -484,10 +489,27 @@ async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
 }
 
 async function syncNetsuiteMapping(systemMessageRemoteId: string) {
+  emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: true });
   const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
   if (response) {
-    getNetSuiteRMAMapping()
+    await getNetSuiteRMAMapping()
+    emitter.emit("dismissLoader");
     showToast(translate("NetSuite mapping synced successfully."));
+  } 
+}
+
+async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
+  try {
+    emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: true });
+    const response = await UserService.syncAllNetsuiteMapping(systemMessageRemoteId);
+    if (response) {
+      await getNetSuiteRMAMapping()
+      emitter.emit("dismissLoader");
+      showToast(translate("NetSuite mapping synced successfully."));
+    }
+  } catch (error) {
+    logger.error(error)
+    showToast(translate("Unable to sync NetSuite mapping. Please try again."));
   } 
 }
 
@@ -527,9 +549,11 @@ async function updateIntegrationTypeMapping(mapping: any) {
             mappingValue: data.mappingValue 
           };
           try {
+            emitter.emit("presentLoader", { message: "Updating...", backdropDismiss: true });
             const response = await UserService.updateIntegrationTypeMapping(payload);
             if (!hasError(response)) {
-              getNetSuiteRMAMapping()
+              await getNetSuiteRMAMapping()
+              emitter.emit("dismissLoader");
               showToast(translate("NetSuite mapping updated successfully."));
             } else {
               throw response.data
@@ -656,8 +680,8 @@ async function openReturnStatusModal(returnMap: any) {
       modal.present();
       await modal.onWillDismiss();
     } else {
-        throw response.data
-      }
+      throw response.data
+    }
   } catch (error) {
     logger.error(error)
     showToast(translate("Failed to get Loop return details."));
@@ -669,6 +693,7 @@ async function getLoopReturnStatusCount() {
       const response = await UserService.getLoopReturnStatusCount()
       if (!hasError(response)) {
         returnCount.value = response.data.returnCountMap
+        returnTotalCount.value = response.data.returnCountMap.open + response.data.returnCountMap.closed + response.data.returnCountMap.failed
       } else {
         throw response.data
       }
@@ -680,6 +705,7 @@ async function getLoopReturnStatusCount() {
 
 async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize = 50) {
   try {
+    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
     if (reset) {
       pageIndex.value = 0;
       loadMore.value = true;
@@ -696,11 +722,13 @@ async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize 
       const data = response.data?.returnList || [];
       if (data.length < pageSize) loadMore.value = false;
       returnStatusList.value = reset ? data : [...returnStatusList.value, ...data];
+      emitter.emit("dismissLoader");
     } else {
       throw response.data;
     }
   } catch (err) {
     logger.error(err);
+    emitter.emit("dismissLoader");
     showToast(translate("Failed to fetch return list."));
   }
 }
@@ -724,7 +752,7 @@ const confirmDelete = async (onConfirm: any, message?: string) => {
           role: 'cancel'
         },
         {
-          text: 'Delete',
+          text: 'Ok',
           handler: onConfirm
         }
       ]
@@ -734,10 +762,6 @@ const confirmDelete = async (onConfirm: any, message?: string) => {
 
 </script>
 <style scoped>
-h1 {
-  margin: 24px 24px 0;
-}
-
 aside {
   position: sticky;
   top: 0;
@@ -757,6 +781,13 @@ aside {
 }
 
 .item-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 6fr 2fr 2fr 2fr;
+  align-items: center;
+}
+
+.netsuite-mapping-grid {
   width: 100%;
   display: grid;
   grid-template-columns: 5fr 2fr 2fr 2fr 1fr;
@@ -782,11 +813,6 @@ aside {
   align-items: center;
   padding: 14px;
   transition: background-color 0.3s; 
-}
-
-.spinner_size {
-  width: 16px;
-  height: 16px;
 }
 
 ion-item.list-item:hover .section-header {

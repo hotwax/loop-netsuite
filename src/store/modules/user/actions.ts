@@ -45,6 +45,7 @@ const actions: ActionTree<UserState, RootState> = {
     try {
       const resp = await UserService.getProfile()
       if (!hasError(resp) && resp.status === 200) {
+        commit(types.USER_ORGANIZATION_DETAILS, resp.data.organizationDetailList[0] )
         return resp
       } else {
         throw resp.data
