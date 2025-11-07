@@ -20,7 +20,6 @@
     </ion-header>
     <ion-content ref="contentRef" :scroll-events="true" >
       <div v-if="segmentSelected === 'configuration'">
-        <h1>{{ translate("Connect") }}</h1>
         <section class="ion-padding-horizontal">
           <div>
             <ion-card>
@@ -114,7 +113,7 @@
             <ion-card>
               <ion-card-header>
                 <ion-item lines="none">
-                  <ion-card-title>{{ translate("NetSuite integration mapping") }}</ion-card-title>
+                  <ion-card-title>{{ translate("NetSuite Integration Mapping") }}</ion-card-title>
                 </ion-item>
                 <ion-item lines="none">
                   <ion-chip v-for="(credentials, index) in nsCredentialsList" :key="index" @click="openNetSuiteMappingModal(credentials.accountType, credentials.systemMessageRemoteId)" :outline="true">
@@ -127,16 +126,23 @@
           </div>
         </section>
         <section class="ion-padding-horizontal" >
-          <div v-for="(credentials, index) in nsCredentialsList" :key="index">
+          <div v-for="(credentials, index) in nsCredentialsList" :key="index"> 
             <ion-card>
               <ion-card-header>
-                <ion-card-title>{{ translate(`NetSuite ${credentials.accountType} Mapping`)}}</ion-card-title>
-                <ion-card-subtitle>{{ credentials.remoteId }}</ion-card-subtitle>
+                <ion-item lines="none">
+                  <ion-label>
+                    {{ translate(`NetSuite ${credentials.accountType} Mapping`)}}
+                    <p>{{ credentials.remoteId }}</p>
+                  </ion-label>
+                  <ion-button slot="end" fill="outline" :disabled="netSuiteMapping[credentials.systemMessageRemoteId]?.[0]?.scriptEndPoint != 'Y'" @click="syncAllNetsuiteMapping(credentials.systemMessageRemoteId)">
+                    {{ translate('Sync All') }}
+                  </ion-button>
+                </ion-item>
               </ion-card-header>
               <ion-list v-if="netSuiteMapping[credentials.systemMessageRemoteId] && netSuiteMapping[credentials.systemMessageRemoteId].length > 0">
                 <ion-item>
                   <div class="item-grid">
-                    <ion-label> {{ translate("Mapping Key") }}</ion-label>
+                    <ion-label> {{ translate("Name") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Value") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Status") }}</ion-label>
                     <ion-label class="ion-text-center"> {{ translate("Action") }} </ion-label>
@@ -145,11 +151,11 @@
                 <ion-item  v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
                   <div class="item-grid">
                     <ion-label>
-                      {{ mapping.mappingKey }}
+                      {{ mapping.description }}
                     </ion-label>
                     <ion-label class="ion-text-center">{{ mapping.mappingValue }}</ion-label>
                     <ion-note class="ion-text-center" v-if="mapping.synced == 'Y'" color="success">{{ translate("Synced") }}</ion-note>
-                    <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
+                    <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" :disabled="mapping.scriptEndPoint != 'Y'" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
                       {{ translate("Sync") }}
                     </ion-button>
                     <ion-button fill="clear" size="default" color="medium" @click="deleteIntegrationTypeMappings(mapping)">
@@ -464,6 +470,14 @@ async function syncNetsuiteMapping(systemMessageRemoteId: string) {
   } 
 }
 
+async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
+  const response = await UserService.syncAllNetsuiteMapping(systemMessageRemoteId);
+  if (response) {
+    getNetSuiteRMAMapping()
+    showToast(translate("NetSuite mapping synced successfully."));
+  } 
+}
+
 async function deleteIntegrationTypeMappings(payload: any) {
   const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
   if (response) {
@@ -569,8 +583,8 @@ async function openReturnStatusModal(returnMap: any) {
       modal.present();
       await modal.onWillDismiss();
     } else {
-        throw response.data
-      }
+      throw response.data
+    }
   } catch (error) {
     logger.error(error)
     showToast(translate("Failed to get Loop return details."));
@@ -630,10 +644,6 @@ async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
 
 </script>
 <style scoped>
-h1 {
-  margin: 24px 24px 0;
-}
-
 aside {
   position: sticky;
   top: 0;
