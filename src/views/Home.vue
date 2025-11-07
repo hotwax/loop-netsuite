@@ -529,7 +529,7 @@ async function updateIntegrationTypeMapping(mapping: any) {
       {
         name: 'mappingValue',
         type: 'number',
-        placeholder: 'Enter mapping value'
+        placeholder: 'Mapping value'
       }
     ],
     buttons: [
