@@ -58,7 +58,7 @@
                     <ion-button class="ion-text-center" v-else-if="credentials.verified === 'N'" color="warning" fill="outline" size="small" @click="verifyNetsuiteCredential(credentials.systemMessageRemoteId)">
                       {{ translate("Verify")}}
                     </ion-button>
-                    <ion-button size="default" fill="clear" color="medium" @click="deleteNetsuiteCredential(credentials)">
+                    <ion-button size="default" fill="clear" color="medium" @click="confirmDelete(() => deleteNetsuiteCredential(credentials))">
                       <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
                     </ion-button>
                   </div>
@@ -91,15 +91,14 @@
                   <div class="item-grid-loop">
                     <ion-label>
                       {{ translate(loopCredentials.accountType) }}
-                      <p>{{ loopCredentials.remoteId }}</p>
                     </ion-label>
-                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="deleteLoopWebHook(loopCredentials)">
-                      {{ translate("Unsubscribe Webhook") }}
+                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="confirmDelete(() => deleteLoopWebHook(loopCredentials),'Are you sure you want to unsubscribe from Loop webhook?')">
+                      {{ translate("Unsubscribe") }}
                     </ion-button>
                     <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
-                      {{ translate("Subscribe Webhook") }}
+                      {{ translate("Subscribe") }}
                     </ion-button>
-                    <ion-button fill="clear" size="default" color="medium" @click="deleteLoopCredential(loopCredentials)">
+                    <ion-button fill="clear" size="default" color="medium" @click="confirmDelete(() => deleteLoopCredential(loopCredentials))">
                       <ion-icon slot="icon-only" :icon="trashOutline" ></ion-icon>
                     </ion-button>
                   </div>
@@ -145,15 +144,18 @@
                 <ion-item  v-for="(mapping, index) in netSuiteMapping[credentials.systemMessageRemoteId]" :key="index" :lines="index === netSuiteMapping[credentials.systemMessageRemoteId].length - 1 ? 'none' : ''">
                   <div class="item-grid">
                     <ion-label>
-                      {{ mapping.mappingKey }}
+                      {{ mapping.description }}
                     </ion-label>
                     <ion-label class="ion-text-center">{{ mapping.mappingValue }}</ion-label>
                     <ion-note class="ion-text-center" v-if="mapping.synced == 'Y'" color="success">{{ translate("Synced") }}</ion-note>
                     <ion-button class="ion-text-center" v-else-if="mapping.synced == 'N'" color="warning" fill="outline" size="small" @click="syncNetsuiteMapping(mapping.integrationMappingId)" >
                       {{ translate("Sync") }}
                     </ion-button>
-                    <ion-button fill="clear" size="default" color="medium" @click="deleteIntegrationTypeMappings(mapping)">
+                    <ion-button fill="clear" size="default" color="medium" @click="confirmDelete(() => deleteIntegrationTypeMappings(mapping))">
                       <ion-icon slot="icon-only" :icon="trashOutline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" size="default" color="medium" @click="updateIntegrationTypeMapping(mapping)">
+                      <ion-icon slot="icon-only" :icon="pencilOutline"></ion-icon>
                     </ion-button>
                   </div>
                 </ion-item>
@@ -241,7 +243,7 @@
                 <strong>{{translate("Loop Return Id")}}</strong>
                 <strong>{{translate("Shopify Order Id")}}</strong>
                 <strong>{{translate("Shopify Order Name")}}</strong>
-                <strong>{{translate("Netsuite Return Id")}}</strong>
+                <strong>{{translate("NetSuite Return Id")}}</strong>
                 <strong>{{translate("Status")}}</strong>
                 <strong>{{translate("History")}}</strong>
               </div>
@@ -304,7 +306,7 @@ import {
 import { ref } from "vue";
 import { useStore } from "@/store";
 import { copyToClipboard, showToast } from "@/utils";
-import { addOutline, openOutline, trashOutline } from "ionicons/icons";
+import { addOutline, openOutline, pencilOutline, trashOutline } from "ionicons/icons";
 import NetSuiteModal from "@/components/NetSuiteModal.vue";
 import LoopModal from "@/components/LoopModal.vue";
 import { translate } from '@/i18n';
@@ -316,6 +318,7 @@ import { hasError } from "@hotwax/oms-api";
 import logger from "@/logger";
 import { UserService } from "@/services/UserService";
 import { IonInfiniteScrollCustomEvent } from "@ionic/core";
+import emitter from "@/event-bus";
 
 const store = useStore();
 
@@ -332,22 +335,29 @@ const currentStatus = ref("ALL");
 const pageIndex = ref(0);
 const loadMore = ref(true);
 const loginKeyMap = ref({});
+const isLoading = ref(false);
 
 onIonViewDidEnter(async() => {
+  emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
   await getVerifyLoopWebhook()
   await fetchUserNetSuiteDetails();
   await fetchUserLoopDetails();
   await getNetSuiteRMAMapping();
   await getAPIKey()
+  emitter.emit("dismissLoader");
 })
 
 const segmentChanged = async(event: any) => {
   segmentSelected.value = event.detail.value;
   if (segmentSelected.value === 'syncStatus') {
+    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
     await getLoopReturnStatusCount()
     await getLoopReturnStatusList("ALL");
+    emitter.emit("dismissLoader");
   } else if (segmentSelected.value === 'account') {
+    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
     await fetchUserProfile()
+    emitter.emit("dismissLoader");
   }
 };
 
@@ -379,7 +389,7 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
     const response = await store.dispatch('user/netsuiteMapping', data);
     if (response) {
       getNetSuiteRMAMapping()
-      showToast(translate("NetSuite Mapping saved successfully."));
+      showToast(response.messages);
     }
   }
 } 
@@ -489,6 +499,52 @@ async function deleteIntegrationTypeMappings(payload: any) {
   } 
 }
 
+async function updateIntegrationTypeMapping(mapping: any) {
+  
+  const alert = await alertController.create({
+    header: 'Enter Mapping Value',
+    inputs: [
+      {
+        name: 'mappingValue',
+        type: 'number',
+        placeholder: 'Enter mapping value'
+      }
+    ],
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel'
+      },
+      {
+        text: 'Save',
+        handler: async (data) => {
+          if (!data.mappingValue.trim()) {
+            showToast(translate("Please provide a value."));
+            return false;
+          }
+          const payload = { 
+            integrationMappingId: mapping.integrationMappingId,
+            mappingValue: data.mappingValue 
+          };
+          try {
+            const response = await UserService.updateIntegrationTypeMapping(payload);
+            if (!hasError(response)) {
+              getNetSuiteRMAMapping()
+              showToast(translate("NetSuite mapping updated successfully."));
+            } else {
+              throw response.data
+            }
+          } catch (err) {
+            logger.error(err)
+            showToast(translate("Failed to update NetSuite mapping."));
+          }
+        }
+      }
+    ]
+  });
+  await alert.present();
+}
+
 async function verifyloopCredential(loopCredentials: any) {
   const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
   if (response) {
@@ -521,11 +577,12 @@ async function postAPIKey(credentials: any) {
   if (response) {
     const alert = await alertController.create({
       header: 'Refresh API Key',
-      subHeader: `An API Key has been generated for NetSuite Account ID ${credentials.remoteId}.
-      Please copy and save this key now — it will only be shown once.<br/>
-      Use this key to create an API Secret record in NetSuite.<br />
-      
-      Your API Key is: ${response.loginKey}`,
+       message: `
+        An API Key has been generated for NetSuite Account ID <b>${credentials.remoteId}</b>.<br/><br/>
+        Please copy and save this key now — it will only be shown once.<br/>
+        Use this key to create an API Secret record in NetSuite.<br/><br/>
+        <b>Your API Key is:</b> ${response.loginKey}
+      `,
       buttons: [
         {
           text: 'copy API Key',
@@ -658,6 +715,23 @@ async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
   ev.target.complete();
 }
 
+const confirmDelete = async (onConfirm: any, message?: string) => {
+  const alert = await alertController.create({
+      subHeader:  message ? message : 'Do you really want to delete?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: onConfirm
+        }
+      ]
+    });
+    await alert.present();
+}
+
 </script>
 <style scoped>
 h1 {
@@ -685,14 +759,14 @@ aside {
 .item-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: 6fr 2fr 2fr 2fr;
+  grid-template-columns: 5fr 2fr 2fr 2fr 1fr;
   align-items: center;
 }
 
 .item-grid-loop {
   width: 100%;
   display: grid;
-  grid-template-columns: 5fr 5fr 2fr;
+  grid-template-columns: 7fr 3fr 2fr;
   align-items: center;
 
 }
@@ -708,6 +782,11 @@ aside {
   align-items: center;
   padding: 14px;
   transition: background-color 0.3s; 
+}
+
+.spinner_size {
+  width: 16px;
+  height: 16px;
 }
 
 ion-item.list-item:hover .section-header {

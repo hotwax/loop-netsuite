@@ -198,6 +198,17 @@ const deleteIntegrationTypeMappings = async (payload: any): Promise<any> => {
   });
 }
 
+const updateIntegrationTypeMapping = async (payload: any): Promise<any> => {
+  return api({
+    url: "/netsuite-loop-connector/updateIntegrationTypeMapping",
+    method: "post",
+    data: {
+      integrationMappingId: payload.integrationMappingId,
+      mappingValue: payload.mappingValue
+    }
+  });
+}
+
 const updateUserProfile = async (payload: any): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/organizations/updateProfile",
@@ -264,6 +275,7 @@ export const UserService = {
   syncNetsuiteMapping,
   uploadLoopCredentials,
   uploadNetSuiteCredentials,
+  updateIntegrationTypeMapping,
   updatePassword,
   updateUserProfile,
   verifyloopCredential,
