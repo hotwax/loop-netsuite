@@ -429,7 +429,7 @@ async function openLoopModal(accountType: string ) {
 }
 
 async function fetchUserProfile() {
-  const response = await store.dispatch('user/getProfile');
+  await store.dispatch('user/getProfile');
 }
 
 async function fetchUserNetSuiteDetails() {
@@ -730,11 +730,11 @@ async function getLoopReturnStatusCount() {
 
 async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize = 50) {
   try {
-    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
     if (reset) {
       pageIndex.value = 0;
       loadMore.value = true;
       currentStatus.value = statusId;
+      emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
     }
 
     const params: any = { pageIndex: pageIndex.value, pageSize };
