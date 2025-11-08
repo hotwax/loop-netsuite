@@ -10,8 +10,8 @@
         <ion-card>
           <ion-item lines="full">
             <ion-card-header class="ion-no-padding ion-padding-vertical">
-              <ion-card-subtitle>{{ profile.username }}</ion-card-subtitle>
-              <ion-card-title>{{ profile.userFullName }}</ion-card-title>
+              <ion-card-subtitle>{{ organizationDetails.username }}</ion-card-subtitle>
+              <ion-card-title>{{ organizationDetails.userFullName }}</ion-card-title>
             </ion-card-header>
           </ion-item>
           <ion-button color="danger" @click="logout()">{{ translate("Logout") }}</ion-button>
@@ -37,17 +37,18 @@ import {
   onIonViewDidEnter } from "@ionic/vue";
 import { useStore } from "vuex";
 import { translate } from "@/i18n";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 onIonViewDidEnter(async() => {
   await fetchUserProfile()
 })
 const store = useStore()
-const profile = ref({})
+const organizationDetails = computed(() => store.getters['user/getOrganizationDetails']);
+
 
 async function fetchUserProfile() {
-  const response = await store.dispatch('user/getProfile');
-  profile.value = response.data.organizationDetailList[0];
+  if (organizationDetails.value) return
+  await store.dispatch('user/getProfile');
 }
 
 function logout() {
