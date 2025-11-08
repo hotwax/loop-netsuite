@@ -310,7 +310,7 @@ import {
   onIonViewDidEnter
 } from "@ionic/vue";
 
-import { computed, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useStore } from "@/store";
 import { copyToClipboard, showToast } from "@/utils";
 import { addOutline, openOutline, pencilOutline, trashOutline } from "ionicons/icons";
@@ -345,14 +345,14 @@ const loginKeyMap = ref({});
 
 const organizationDetails = computed(() => store.getters['user/getOrganizationDetails']);
 
-
-onIonViewDidEnter(async() => {
-  emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
-  await getVerifyLoopWebhook()
+onIonViewDidEnter(async () => {
+  await nextTick();
+  emitter.emit("presentLoader", { message: "loading..." });
+  await getVerifyLoopWebhook();
   await fetchUserNetSuiteDetails();
   await fetchUserLoopDetails();
   await getNetSuiteRMAMapping();
-  await getAPIKey()
+  await getAPIKey();
   await fetchUserProfile();
   emitter.emit("dismissLoader");
 })
@@ -375,9 +375,11 @@ async function openNetsuiteModal(accountType: string ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
     const response = await store.dispatch('user/netSuiteCredentials', data);
     if (response) {
-      fetchUserNetSuiteDetails()
+      await fetchUserNetSuiteDetails()
+      emitter.emit("dismissLoader")
       showToast(translate("NetSuite credentials saved successfully."));
     }
   }
@@ -392,9 +394,11 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
     const response = await store.dispatch('user/netsuiteMapping', data);
     if (response) {
-      getNetSuiteRMAMapping()
+      await getNetSuiteRMAMapping()
+      emitter.emit("dismissLoader")
       showToast(response.messages);
     }
   }
@@ -415,9 +419,10 @@ async function openLoopModal(accountType: string ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
     const response = await store.dispatch('user/loopCredentials', data);
     if (response) {
-      fetchUserLoopDetails()
+      await fetchUserLoopDetails()
       showToast(translate("Loop credentials saved successfully."));
     }
   }
@@ -435,8 +440,10 @@ async function fetchUserNetSuiteDetails() {
 }
 
 async function deleteNetsuiteCredential(data: any) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/deleteNetSuiteCredential', data);
   if (response) {
+    emitter.emit("dismissLoader");
     nsCredentialsList.value = nsCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
     showToast(translate("NetSuite credential deleted successfully."));
   }
@@ -458,8 +465,10 @@ async function fetchUserLoopDetails() {
 }
 
 async function deleteLoopCredential(data: any) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/deleteLoopCredential', data);
   if (response) {
+    emitter.emit("dismissLoader");
     loopCredentialsList.value = loopCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
     showToast(translate("Loop credential deleted successfully."));
   }
@@ -467,10 +476,12 @@ async function deleteLoopCredential(data: any) {
 
 async function deleteLoopWebHook(data: any) {
   try {
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
     const response = await UserService.deleteLoopWebHook(data);
     if (!hasError(response)) {
+      await fetchUserLoopDetails()
+      emitter.emit("dismissLoader")
       showToast(translate("Loop Webhook Unscrible successfully."));
-      getVerifyLoopWebhook()
     } else {
       throw response.data
     }
@@ -481,9 +492,11 @@ async function deleteLoopWebHook(data: any) {
 }
 
 async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
   if (response) {
-    fetchUserNetSuiteDetails()
+    await fetchUserNetSuiteDetails()
+    emitter.emit("dismissLoader")
     showToast(translate("Verified NetSuite Credentials successfully."));
   }  
 }
@@ -514,8 +527,10 @@ async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
 }
 
 async function deleteIntegrationTypeMappings(payload: any) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
   if (response) {
+    emitter.emit("dismissLoader");
     getNetSuiteRMAMapping()
     showToast(translate("NetSuite mapping deleted successfully."));
   } 
@@ -570,9 +585,11 @@ async function updateIntegrationTypeMapping(mapping: any) {
 }
 
 async function verifyloopCredential(loopCredentials: any) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
   if (response) {
-    fetchUserLoopDetails()
+    await fetchUserLoopDetails()
+    emitter.emit("dismissLoader")
     showToast(translate("Verified Loop Credentials successfully."));
   }
 }
@@ -597,8 +614,10 @@ async function getAPIKey() {
 }
 
 async function postAPIKey(credentials: any) {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
   const response = await store.dispatch('user/postAPIKey', credentials);
   if (response) {
+    emitter.emit("dismissLoader")
     const alert = await alertController.create({
       header: 'Refresh API Key',
        message: `
@@ -632,9 +651,11 @@ async function updateProfile(profile: any ) {
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
     try {
+      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
       const response = await UserService.updateUserProfile(data)
       if (!hasError(response)) {
-        fetchUserProfile()
+        await fetchUserProfile()
+        emitter.emit("dismissLoader");
         showToast(translate("User profile updated successfully."));
       } else {
         throw response.data
@@ -656,8 +677,10 @@ async function updatePassword(profile: any ) {
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
     try {
+      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
       const resp = await UserService.updatePassword(data)
       if (!hasError(resp)) {
+        emitter.emit("dismissLoader");
         showToast(translate("New password updated successfully."));
       } else {
         throw resp.data
@@ -671,8 +694,10 @@ async function updatePassword(profile: any ) {
 
 async function openReturnStatusModal(returnMap: any) {
   try {
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
     const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
     if (!hasError(response)) {
+      emitter.emit("dismissLoader");
       const modal = await modalController.create({
         component: ReturnStatusModal,
         componentProps: { response: response.data, returnMap },
