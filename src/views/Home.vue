@@ -3,7 +3,7 @@
     <ion-header :translucent="true" >
       <ion-toolbar>
         <ion-item lines="none" slot="start">
-          <h3>{{ organizationDetails.organizationName }}</h3>
+          <h3>{{ organizationDetails?.organizationName }}</h3>
         </ion-item>
           <ion-segment v-model="segmentSelected" @ion-change="segmentChanged">
             <ion-segment-button value="configuration">
@@ -174,28 +174,28 @@
         <ion-card class="ion-card-width">
           <ion-card-header>
             <ion-card-title>{{translate("User Account Information")}}</ion-card-title>
-            <ion-card-subtitle>{{ organizationDetails.organizationName }}</ion-card-subtitle>
+            <ion-card-subtitle>{{ organizationDetails?.organizationName }}</ion-card-subtitle>
           </ion-card-header>
           <ion-list lines="full">
             <ion-item>
               <ion-label>{{translate("User Id")}}</ion-label>
-              <ion-label slot="end">{{ organizationDetails.userId }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails?.userId }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Full Name")}} </ion-label>
-              <ion-label slot="end">{{ organizationDetails.userFullName }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails?.userFullName }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Email")}}</ion-label>
-              <ion-label slot="end">{{ organizationDetails.emailAddress }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails?.emailAddress }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("User Name")}}</ion-label>
-              <ion-label slot="end">{{ organizationDetails.username }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails?.username }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label>{{translate("Organization Name")}}</ion-label>
-              <ion-label slot="end">{{ organizationDetails.organizationName }}</ion-label>
+              <ion-label slot="end">{{ organizationDetails?.organizationName }}</ion-label>
             </ion-item>
             <ion-item lines="none">
               <ion-button slot="end" color="warning" fill="outline" @click="updatePassword(organizationDetails)">

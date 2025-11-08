@@ -10,8 +10,8 @@
         <ion-card>
           <ion-item lines="full">
             <ion-card-header class="ion-no-padding ion-padding-vertical">
-              <ion-card-subtitle>{{ organizationDetails.username }}</ion-card-subtitle>
-              <ion-card-title>{{ organizationDetails.userFullName }}</ion-card-title>
+              <ion-card-subtitle>{{ organizationDetails?.username }}</ion-card-subtitle>
+              <ion-card-title>{{ organizationDetails?.userFullName }}</ion-card-title>
             </ion-card-header>
           </ion-item>
           <ion-button color="danger" @click="logout()">{{ translate("Logout") }}</ion-button>
