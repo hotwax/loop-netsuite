@@ -703,6 +703,7 @@ async function openReturnStatusModal(returnMap: any) {
   try {
     emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
+    emitter.emit("dismissLoader");
     if (!hasError(response)) {
       const modal = await modalController.create({
         component: ReturnStatusModal,
@@ -713,7 +714,6 @@ async function openReturnStatusModal(returnMap: any) {
     } else {
       throw response.data
     }
-    emitter.emit("dismissLoader");
   } catch (error) {
     logger.error(error)
     emitter.emit("dismissLoader");
