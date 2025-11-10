@@ -20,13 +20,13 @@
       <ion-item>
         <div class="status-grid">
           <ion-label>
-            {{ translate("Status") }}
+            <strong>{{ translate("Status") }}</strong>
           </ion-label>
           <ion-label>
-            {{ translate("Date") }}
+            <strong>{{ translate("Date") }}</strong>
           </ion-label>
           <ion-label>
-            {{ translate("Change Reason") }}
+            <strong>{{ translate("Change Reason") }}</strong>
           </ion-label>
         </div>
       </ion-item>
@@ -82,7 +82,7 @@ const cancel = () => modalController.dismiss(null, 'cancel');
 .status-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: 3fr 3fr 6fr;
+  grid-template-columns: 3fr 4fr 5fr;
   align-items: center;
 }
 </style>

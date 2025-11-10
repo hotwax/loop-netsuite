@@ -17,7 +17,7 @@
       <ion-input label-placement="floating" :label="translate('Full Name')" v-model="updateUserProfile.userFullName" type="text"></ion-input>
     </ion-item>
     <ion-item lines="full">
-      <ion-input label-placement="floating" :label="translate('Username')" v-model="updateUserProfile.username" type="text"></ion-input>
+      <ion-input label-placement="floating" :label="translate('User Name')" v-model="updateUserProfile.username" type="text"></ion-input>
     </ion-item>
     <ion-item lines="full">
       <ion-input label-placement="floating" :label="translate('Email')" v-model="updateUserProfile.emailAddress" type="email"></ion-input>

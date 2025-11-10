@@ -20,13 +20,15 @@
       <ion-input  label-placement="floating" :label="translate('NetSuite Certificate ID')" v-model="netSuiteDetails.sendSharedSecret" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-icon :icon="cloudUploadOutline" slot="end" />
       <ion-label>
         {{ translate("Import PEM File") }}
       </ion-label>
+      <ion-label class="ion-text-right ion-padding-end">
+        {{ uploadedFileName }}
+      </ion-label>
       <input @change="uploadPemFile" ref="file" type="file" class="ion-hide"  id="updatePemFile" accept=".pem" required/>
       <label for="updatePemFile" class="pointer">
-        {{ translate("Upload PEM File") }}
+        {{ translate("Upload") }}
       </label>
     </ion-item>
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
@@ -55,10 +57,11 @@ import {
   IonToolbar,
   modalController,
 } from '@ionic/vue';
-import { closeOutline, saveOutline, cloudUploadOutline } from 'ionicons/icons';
+import { closeOutline, saveOutline } from 'ionicons/icons';
 import { defineProps, ref } from 'vue';
 
 const props = defineProps(["accountType"]);
+const uploadedFileName = ref('')
 
 const netSuiteDetails = ref({
   remoteId: '',
@@ -73,6 +76,7 @@ const uploadPemFile = async (event: any) => {
   if (!selectedFile) {
     return;
   }
+  uploadedFileName.value = selectedFile.name 
   netSuiteDetails.value.sshKey = selectedFile;
 }
 const cancel = () => modalController.dismiss(null, 'cancel');

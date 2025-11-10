@@ -11,7 +11,7 @@
   </ion-header>
   <ion-content>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="translate('Access Key')" v-model="loopDetails.privateKey" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('API Key')" v-model="loopDetails.privateKey" type="text" required />
     </ion-item>
     <ion-item lines="full">
       <ion-input  label-placement="floating" :label="translate('Webhook Secret')" v-model="loopDetails.sendSharedSecret" type="text" required />

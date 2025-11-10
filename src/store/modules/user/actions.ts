@@ -44,7 +44,8 @@ const actions: ActionTree<UserState, RootState> = {
   async getProfile({ commit, dispatch }) {
     try {
       const resp = await UserService.getProfile()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
+        commit(types.USER_INFO_UPDATED, resp.data.organizationDetailList[0] )
         return resp
       } else {
         throw resp.data
@@ -58,7 +59,7 @@ const actions: ActionTree<UserState, RootState> = {
   async getNetSuiteDetails({ commit, dispatch }) {
     try {
       const resp = await UserService.getNetSuiteDetails()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -84,7 +85,7 @@ const actions: ActionTree<UserState, RootState> = {
   async netSuiteCredentials({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.uploadNetSuiteCredentials(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -97,7 +98,7 @@ const actions: ActionTree<UserState, RootState> = {
   async netsuiteMapping({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.postNetsuiteMapping(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -110,7 +111,7 @@ const actions: ActionTree<UserState, RootState> = {
   async syncNetsuiteMapping({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.syncNetsuiteMapping(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -123,7 +124,7 @@ const actions: ActionTree<UserState, RootState> = {
   async deleteIntegrationTypeMappings({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteIntegrationTypeMappings(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -136,7 +137,7 @@ const actions: ActionTree<UserState, RootState> = {
   async deleteNetSuiteCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteNetSuiteCredential(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -149,7 +150,7 @@ const actions: ActionTree<UserState, RootState> = {
   async loopCredentials({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.uploadLoopCredentials(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -162,7 +163,7 @@ const actions: ActionTree<UserState, RootState> = {
   async getLoopDetails({ commit, dispatch }) {
     try {
       const resp = await UserService.getLoopDetails()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -175,7 +176,7 @@ const actions: ActionTree<UserState, RootState> = {
   async deleteLoopCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.deleteLoopCredential(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -188,7 +189,7 @@ const actions: ActionTree<UserState, RootState> = {
   async verifyNetsuiteCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.verifyNetsuiteCredential(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -201,7 +202,7 @@ const actions: ActionTree<UserState, RootState> = {
   async verifyloopCredential({ commit, dispatch }, payload) {
     try {
       const resp = await UserService.verifyloopCredential(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -214,7 +215,7 @@ const actions: ActionTree<UserState, RootState> = {
   async getVerifyLoopWebhook({ commit, dispatch }) {
     try {
       const resp = await UserService.getVerifyLoopWebhook()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -224,10 +225,10 @@ const actions: ActionTree<UserState, RootState> = {
       showToast(translate("Unable to verify Loop webhook subscribe. Please try again either delete the credential and add it again."));
     }
   },
-  async getAPIKey({ commit, dispatch }, payload) {
+  async postAPIKey({ commit, dispatch }, payload) {
     try {
-      const resp = await UserService.getAPIKey(payload)
-      if (!hasError(resp) && resp.status === 200) {
+      const resp = await UserService.postAPIKey(payload)
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -240,7 +241,7 @@ const actions: ActionTree<UserState, RootState> = {
   async getNetSuiteRMATypeMapping({ commit, dispatch }) {
     try {
       const resp = await UserService.getNetSuiteRMATypeMapping()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
@@ -253,7 +254,7 @@ const actions: ActionTree<UserState, RootState> = {
   async getNetSuiteRMAMapping({ commit, dispatch }) {
     try {
       const resp = await UserService.getNetSuiteRMAMapping()
-      if (!hasError(resp) && resp.status === 200) {
+      if (!hasError(resp)) {
         return resp.data;
       } else {
         throw resp.data
