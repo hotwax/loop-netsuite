@@ -43,7 +43,7 @@ onIonViewDidEnter(async() => {
   await fetchUserProfile()
 })
 const store = useStore()
-const organizationDetails = computed(() => store.getters['user/getOrganizationDetails']);
+const organizationDetails = computed(() => store.getters['user/getUserProfile']);
 
 
 async function fetchUserProfile() {

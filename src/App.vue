@@ -25,7 +25,6 @@ export default defineComponent({
     // Vuex getters converted:
     const userToken = computed(() => store.getters['user/getUserToken']);
     const instanceUrl = computed(() => store.getters['user/getInstanceUrl']);
-    const userProfile = computed(() => store.getters['user/getUserProfile']);
 
     async function presentLoader(options = { message: "Click the backdrop to dismiss.", backdropDismiss: true }) {
       // When having a custom message remove already existing loader, if not removed it takes into account the already existing loader
@@ -84,8 +83,7 @@ export default defineComponent({
       presentLoader,
       dismissLoader,
       userToken,
-      instanceUrl,
-      userProfile
+      instanceUrl
     };
   }
 });

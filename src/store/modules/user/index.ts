@@ -11,7 +11,6 @@ const userModule: Module<UserState, RootState> = {
       token: '',
       current: null,
       instanceUrl: '',
-      userOrganizationsDetails: null,
     },
     getters,
     actions,

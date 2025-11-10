@@ -343,7 +343,7 @@ const pageIndex = ref(0);
 const loadMore = ref(true);
 const loginKeyMap = ref({});
 
-const organizationDetails = computed(() => store.getters['user/getOrganizationDetails']);
+const organizationDetails = computed(() => store.getters['user/getUserProfile']);
 
 onIonViewDidEnter(async () => {
   await nextTick();
@@ -379,9 +379,9 @@ async function openNetsuiteModal(accountType: string ) {
     const response = await store.dispatch('user/netSuiteCredentials', data);
     if (response) {
       await fetchUserNetSuiteDetails()
-      emitter.emit("dismissLoader")
       showToast(translate("NetSuite credentials saved successfully."));
     }
+    emitter.emit("dismissLoader")
   }
 }
 
@@ -398,9 +398,9 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
     const response = await store.dispatch('user/netsuiteMapping', data);
     if (response) {
       await getNetSuiteRMAMapping()
-      emitter.emit("dismissLoader")
       showToast(response.messages);
     }
+    emitter.emit("dismissLoader")
   }
 } 
 
@@ -425,6 +425,7 @@ async function openLoopModal(accountType: string ) {
       await fetchUserLoopDetails()
       showToast(translate("Loop credentials saved successfully."));
     }
+    emitter.emit("dismissLoader")
   }
 }
 
@@ -443,10 +444,10 @@ async function deleteNetsuiteCredential(data: any) {
   emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteNetSuiteCredential', data);
   if (response) {
-    emitter.emit("dismissLoader");
     nsCredentialsList.value = nsCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
     showToast(translate("NetSuite credential deleted successfully."));
   }
+  emitter.emit("dismissLoader");
 }
 
 const isChipDisabled = (type: string, cardType : string) => {
@@ -468,10 +469,10 @@ async function deleteLoopCredential(data: any) {
   emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteLoopCredential', data);
   if (response) {
-    emitter.emit("dismissLoader");
     loopCredentialsList.value = loopCredentialsList.value.filter(cred => cred.systemMessageRemoteId !== data.systemMessageRemoteId);
     showToast(translate("Loop credential deleted successfully."));
   }
+  emitter.emit("dismissLoader");
 }
 
 async function deleteLoopWebHook(data: any) {
@@ -480,13 +481,14 @@ async function deleteLoopWebHook(data: any) {
     const response = await UserService.deleteLoopWebHook(data);
     if (!hasError(response)) {
       await fetchUserLoopDetails()
-      emitter.emit("dismissLoader")
       showToast(translate("Loop Webhook Unscrible successfully."));
     } else {
       throw response.data
     }
+    emitter.emit("dismissLoader")
   } catch (err) {
     logger.error(err)
+    emitter.emit("dismissLoader");
     showToast(translate("Failed to Unscrible Loop webhook."));
   }
 }
@@ -496,9 +498,9 @@ async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
   const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
   if (response) {
     await fetchUserNetSuiteDetails()
-    emitter.emit("dismissLoader")
     showToast(translate("Verified NetSuite Credentials successfully."));
   }  
+  emitter.emit("dismissLoader")
 }
 
 async function syncNetsuiteMapping(systemMessageRemoteId: string) {
@@ -506,9 +508,9 @@ async function syncNetsuiteMapping(systemMessageRemoteId: string) {
   const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
   if (response) {
     await getNetSuiteRMAMapping()
-    emitter.emit("dismissLoader");
     showToast(translate("NetSuite mapping synced successfully."));
   } 
+  emitter.emit("dismissLoader");
 }
 
 async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
@@ -517,11 +519,12 @@ async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
     const response = await UserService.syncAllNetsuiteMapping(systemMessageRemoteId);
     if (response) {
       await getNetSuiteRMAMapping()
-      emitter.emit("dismissLoader");
       showToast(translate("NetSuite mapping synced successfully."));
     }
+    emitter.emit("dismissLoader");
   } catch (error) {
     logger.error(error)
+    emitter.emit("dismissLoader");
     showToast(translate("Unable to sync NetSuite mapping. Please try again."));
   } 
 }
@@ -530,30 +533,30 @@ async function deleteIntegrationTypeMappings(payload: any) {
   emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
   if (response) {
-    emitter.emit("dismissLoader");
     getNetSuiteRMAMapping()
     showToast(translate("NetSuite mapping deleted successfully."));
   } 
+  emitter.emit("dismissLoader");
 }
 
 async function updateIntegrationTypeMapping(mapping: any) {
   
   const alert = await alertController.create({
-    header: 'Enter Mapping Value',
+    header: translate('Enter Mapping Value'),
     inputs: [
       {
         name: 'mappingValue',
         type: 'number',
-        placeholder: 'Mapping value'
+        placeholder: translate('Mapping value')
       }
     ],
     buttons: [
       {
-        text: 'Cancel',
+        text: translate('Cancel'),
         role: 'cancel'
       },
       {
-        text: 'Save',
+        text: translate('Save'),
         handler: async (data) => {
           if (!data.mappingValue.trim()) {
             showToast(translate("Please provide a value."));
@@ -568,13 +571,14 @@ async function updateIntegrationTypeMapping(mapping: any) {
             const response = await UserService.updateIntegrationTypeMapping(payload);
             if (!hasError(response)) {
               await getNetSuiteRMAMapping()
-              emitter.emit("dismissLoader");
               showToast(translate("NetSuite mapping updated successfully."));
             } else {
               throw response.data
             }
+            emitter.emit("dismissLoader");
           } catch (err) {
             logger.error(err)
+            emitter.emit("dismissLoader");
             showToast(translate("Failed to update NetSuite mapping."));
           }
         }
@@ -589,9 +593,9 @@ async function verifyloopCredential(loopCredentials: any) {
   const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
   if (response) {
     await fetchUserLoopDetails()
-    emitter.emit("dismissLoader")
     showToast(translate("Verified Loop Credentials successfully."));
   }
+  emitter.emit("dismissLoader")
 }
 
 async function getVerifyLoopWebhook() {
@@ -616,11 +620,11 @@ async function getAPIKey() {
 async function postAPIKey(credentials: any) {
   emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/postAPIKey', credentials);
+  emitter.emit("dismissLoader")
   if (response) {
-    emitter.emit("dismissLoader")
     const alert = await alertController.create({
-      header: 'Refresh API Key',
-       message: `
+      header: translate('Refresh API Key'),
+      message: `
         An API Key has been generated for NetSuite Account ID <b>${credentials.remoteId}</b>.<br/><br/>
         Please copy and save this key now — it will only be shown once.<br/>
         Use this key to create an API Secret record in NetSuite.<br/><br/>
@@ -628,7 +632,7 @@ async function postAPIKey(credentials: any) {
       `,
       buttons: [
         {
-          text: 'copy API Key',
+          text: translate('copy API Key'),
           role: 'copy',
           handler: () => copyToClipboard(response?.loginKey)
         },
@@ -637,6 +641,7 @@ async function postAPIKey(credentials: any) {
     getAPIKey()
     await alert.present();
   } else {
+    emitter.emit("dismissLoader")
     showToast(translate("Unable to get NetSuite apiKey. Please try again."));
   }
 }
@@ -655,13 +660,14 @@ async function updateProfile(profile: any ) {
       const response = await UserService.updateUserProfile(data)
       if (!hasError(response)) {
         await fetchUserProfile()
-        emitter.emit("dismissLoader");
         showToast(translate("User profile updated successfully."));
       } else {
         throw response.data
       }
+      emitter.emit("dismissLoader");
     } catch (err) {
       logger.error(err)
+      emitter.emit("dismissLoader");
       showToast(translate("Failed to update user profile."));
     }
   }
@@ -680,13 +686,14 @@ async function updatePassword(profile: any ) {
       emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
       const resp = await UserService.updatePassword(data)
       if (!hasError(resp)) {
-        emitter.emit("dismissLoader");
         showToast(translate("New password updated successfully."));
       } else {
         throw resp.data
       }
+      emitter.emit("dismissLoader");
     } catch (err) {
       logger.error(err)
+      emitter.emit("dismissLoader");
       showToast(translate("Failed to update password."));
     }
   }
@@ -697,7 +704,6 @@ async function openReturnStatusModal(returnMap: any) {
     emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
     if (!hasError(response)) {
-      emitter.emit("dismissLoader");
       const modal = await modalController.create({
         component: ReturnStatusModal,
         componentProps: { response: response.data, returnMap },
@@ -707,8 +713,10 @@ async function openReturnStatusModal(returnMap: any) {
     } else {
       throw response.data
     }
+    emitter.emit("dismissLoader");
   } catch (error) {
     logger.error(error)
+    emitter.emit("dismissLoader");
     showToast(translate("Failed to get Loop return details."));
   }
 }
@@ -747,10 +755,10 @@ async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize 
       const data = response.data?.returnList || [];
       if (data.length < pageSize) loadMore.value = false;
       returnStatusList.value = reset ? data : [...returnStatusList.value, ...data];
-      emitter.emit("dismissLoader");
     } else {
       throw response.data;
     }
+    emitter.emit("dismissLoader");
   } catch (err) {
     logger.error(err);
     emitter.emit("dismissLoader");
