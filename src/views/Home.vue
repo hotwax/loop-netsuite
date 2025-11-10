@@ -91,7 +91,7 @@
                     <ion-label>
                       {{ translate(loopCredentials.accountType) }}
                     </ion-label>
-                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="confirmDelete(() => deleteLoopWebHook(loopCredentials),'Do you want to unsubscribe Loop webhook?')">
+                    <ion-button class="ion-text-center" v-if="loopCredentials.verified === 'Y'" color="warning" fill="outline" size="small" @click="confirmDelete(() => deleteLoopWebHook(loopCredentials),translate('Do you want to unsubscribe Loop webhook?'))">
                       {{ translate("Unsubscribe") }}
                     </ion-button>
                     <ion-button class="ion-text-center" v-else-if="loopCredentials.verified === 'N'" :disabled="loopWebhookVerified.webhookSubscriptionMap[loopCredentials.systemMessageRemoteId] == 'Y' ? false : true" color="warning" fill="outline" size="small" @click="verifyloopCredential(loopCredentials)">
@@ -758,11 +758,11 @@ async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize 
     } else {
       throw response.data;
     }
-    emitter.emit("dismissLoader");
   } catch (err) {
     logger.error(err);
-    emitter.emit("dismissLoader");
     showToast(translate("Failed to fetch return list."));
+  } finally {
+    if (reset) emitter.emit("dismissLoader");
   }
 }
 
@@ -778,14 +778,14 @@ async function loadMoreReturns(ev: IonInfiniteScrollCustomEvent<void>) {
 
 const confirmDelete = async (onConfirm: any, message?: string) => {
   const alert = await alertController.create({
-      subHeader:  message ? message : 'Do you really want to delete?',
+      subHeader:  message ? message : translate('Do you really want to delete?'),
       buttons: [
         {
-          text: 'Cancel',
+          text: translate('Cancel'),
           role: 'cancel'
         },
         {
-          text: 'Ok',
+          text: translate('Ok'),
           handler: onConfirm
         }
       ]
