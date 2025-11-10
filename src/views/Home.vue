@@ -360,7 +360,7 @@ onIonViewDidEnter(async () => {
 const segmentChanged = async(event: any) => {
   segmentSelected.value = event.detail.value;
   if (segmentSelected.value === 'syncStatus') {
-    emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     await getLoopReturnStatusCount()
     await getLoopReturnStatusList("ALL");
     emitter.emit("dismissLoader");
@@ -375,7 +375,7 @@ async function openNetsuiteModal(accountType: string ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await store.dispatch('user/netSuiteCredentials', data);
     if (response) {
       await fetchUserNetSuiteDetails()
@@ -394,7 +394,7 @@ async function openNetSuiteMappingModal(accountType: string , systemMessageRemot
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await store.dispatch('user/netsuiteMapping', data);
     if (response) {
       await getNetSuiteRMAMapping()
@@ -419,7 +419,7 @@ async function openLoopModal(accountType: string ) {
   modal.present();
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await store.dispatch('user/loopCredentials', data);
     if (response) {
       await fetchUserLoopDetails()
@@ -440,7 +440,7 @@ async function fetchUserNetSuiteDetails() {
 }
 
 async function deleteNetsuiteCredential(data: any) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteNetSuiteCredential', data);
   if (response) {
     emitter.emit("dismissLoader");
@@ -465,7 +465,7 @@ async function fetchUserLoopDetails() {
 }
 
 async function deleteLoopCredential(data: any) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteLoopCredential', data);
   if (response) {
     emitter.emit("dismissLoader");
@@ -476,7 +476,7 @@ async function deleteLoopCredential(data: any) {
 
 async function deleteLoopWebHook(data: any) {
   try {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await UserService.deleteLoopWebHook(data);
     if (!hasError(response)) {
       await fetchUserLoopDetails()
@@ -492,7 +492,7 @@ async function deleteLoopWebHook(data: any) {
 }
 
 async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/verifyNetsuiteCredential', systemMessageRemoteId);
   if (response) {
     await fetchUserNetSuiteDetails()
@@ -502,7 +502,7 @@ async function verifyNetsuiteCredential(systemMessageRemoteId: string) {
 }
 
 async function syncNetsuiteMapping(systemMessageRemoteId: string) {
-  emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: false });
   const response = await store.dispatch('user/syncNetsuiteMapping', systemMessageRemoteId);
   if (response) {
     await getNetSuiteRMAMapping()
@@ -513,7 +513,7 @@ async function syncNetsuiteMapping(systemMessageRemoteId: string) {
 
 async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
   try {
-    emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Syncing...", backdropDismiss: false });
     const response = await UserService.syncAllNetsuiteMapping(systemMessageRemoteId);
     if (response) {
       await getNetSuiteRMAMapping()
@@ -527,7 +527,7 @@ async function syncAllNetsuiteMapping(systemMessageRemoteId: string) {
 }
 
 async function deleteIntegrationTypeMappings(payload: any) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/deleteIntegrationTypeMappings', payload);
   if (response) {
     emitter.emit("dismissLoader");
@@ -564,7 +564,7 @@ async function updateIntegrationTypeMapping(mapping: any) {
             mappingValue: data.mappingValue 
           };
           try {
-            emitter.emit("presentLoader", { message: "Updating...", backdropDismiss: true });
+            emitter.emit("presentLoader", { message: "Updating...", backdropDismiss: false });
             const response = await UserService.updateIntegrationTypeMapping(payload);
             if (!hasError(response)) {
               await getNetSuiteRMAMapping()
@@ -585,7 +585,7 @@ async function updateIntegrationTypeMapping(mapping: any) {
 }
 
 async function verifyloopCredential(loopCredentials: any) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/verifyloopCredential', loopCredentials);
   if (response) {
     await fetchUserLoopDetails()
@@ -614,7 +614,7 @@ async function getAPIKey() {
 }
 
 async function postAPIKey(credentials: any) {
-  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
   const response = await store.dispatch('user/postAPIKey', credentials);
   if (response) {
     emitter.emit("dismissLoader")
@@ -651,7 +651,7 @@ async function updateProfile(profile: any ) {
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
     try {
-      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
       const response = await UserService.updateUserProfile(data)
       if (!hasError(response)) {
         await fetchUserProfile()
@@ -677,7 +677,7 @@ async function updatePassword(profile: any ) {
   const { data, role } = await modal.onWillDismiss();
   if (role === 'save') {
     try {
-      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
       const resp = await UserService.updatePassword(data)
       if (!hasError(resp)) {
         emitter.emit("dismissLoader");
@@ -694,7 +694,7 @@ async function updatePassword(profile: any ) {
 
 async function openReturnStatusModal(returnMap: any) {
   try {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: true });
+    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     const response = await UserService.getLoopReturnStatusDetails(returnMap.loopReturnId);
     if (!hasError(response)) {
       emitter.emit("dismissLoader");
@@ -734,7 +734,7 @@ async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize 
       pageIndex.value = 0;
       loadMore.value = true;
       currentStatus.value = statusId;
-      emitter.emit("presentLoader", { message: "loading...", backdropDismiss: true });
+      emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
     }
 
     const params: any = { pageIndex: pageIndex.value, pageSize };
