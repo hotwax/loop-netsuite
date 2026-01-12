@@ -12,8 +12,8 @@
             <ion-segment-button value="account">
               <ion-label>{{ translate("Account") }}</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="syncStatus">
-              <ion-label>{{ translate("Sync Status") }}</ion-label>
+            <ion-segment-button value="dashboard">
+              <ion-label>{{ translate("Dashboard") }}</ion-label>
             </ion-segment-button>
           </ion-segment>
       </ion-toolbar>
@@ -208,12 +208,16 @@
           </ion-list>
         </ion-card>
       </div>
-      <div v-if="segmentSelected === 'syncStatus'">
+      <div v-if="segmentSelected === 'dashboard'">
         <div class="find">
           <aside>
             <ion-list>
               <ion-item lines="none">
-                <h2>{{ translate("Loop Return Statistics") }}</h2>
+                <ion-select :label="translate('Account Type')" interface="popover" v-model="selectedNSAccount" @ion-change="changeAccountType">
+                  <ion-select-option v-for="ns in nsCredentialsList" :key="ns.systemMessageRemoteId" :value="ns.systemMessageRemoteId">                  
+                    {{ translate(ns.accountType) }}
+                  </ion-select-option>
+                </ion-select>
               </ion-item>
               <ion-item lines="none">
                 <ion-searchbar v-model="searchQuery" :placeholder="translate('Search Return')" @keyup.enter="searchQuery = $event.target.value"/>
@@ -274,7 +278,7 @@
           </main>
         </div>
       </div>
-      <ion-infinite-scroll @ionInfinite="loadMoreReturns($event)" threshold="100px" v-show="(segmentSelected === 'syncStatus')" ref="infiniteScrollRef">
+      <ion-infinite-scroll @ionInfinite="loadMoreReturns($event)" threshold="100px" v-show="(segmentSelected === 'dashboard')" ref="infiniteScrollRef">
         <ion-infinite-scroll-content loading-spinner="crescent" :loading-text="translate('Loading')" />
       </ion-infinite-scroll>
     </ion-content>
@@ -303,6 +307,8 @@ import {
   IonPage,
   IonSegment,
   IonSegmentButton,
+  IonSelect,
+  IonSelectOption,
   IonThumbnail,
   IonToolbar,
   IonSearchbar,
@@ -342,6 +348,7 @@ const currentStatus = ref("ALL");
 const pageIndex = ref(0);
 const loadMore = ref(true);
 const loginKeyMap = ref({});
+const selectedNSAccount = ref('');
 
 const organizationDetails = computed(() => store.getters['user/getUserProfile']);
 
@@ -359,11 +366,8 @@ onIonViewDidEnter(async () => {
 
 const segmentChanged = async(event: any) => {
   segmentSelected.value = event.detail.value;
-  if (segmentSelected.value === 'syncStatus') {
-    emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
-    await getLoopReturnStatusCount()
-    await getLoopReturnStatusList("ALL");
-    emitter.emit("dismissLoader");
+  if (segmentSelected.value === 'dashboard') {
+    await changeAccountType();
   } 
 };
 
@@ -438,6 +442,11 @@ async function fetchUserNetSuiteDetails() {
   if (response) {
     nsCredentialsList.value = response.netsuiteRemoteList;
   } 
+  // set default selected account to sandbox if exists, otherwise first entry
+  if (nsCredentialsList.value?.length) {
+    const sandbox = nsCredentialsList.value.find((nsCredential: any) => nsCredential.accountType === 'sandbox');
+    selectedNSAccount.value = sandbox?.systemMessageRemoteId || nsCredentialsList.value[0].systemMessageRemoteId;
+  }
 }
 
 async function deleteNetsuiteCredential(data: any) {
@@ -721,9 +730,9 @@ async function openReturnStatusModal(returnMap: any) {
   }
 }
 
-async function getLoopReturnStatusCount() {
+async function getLoopReturnStatusCount(systemMessageRemoteId: string) {
   try {
-      const response = await UserService.getLoopReturnStatusCount()
+      const response = await UserService.getLoopReturnStatusCount(systemMessageRemoteId)
       if (!hasError(response)) {
         returnCount.value = response.data.returnCountMap
         returnTotalCount.value = response.data.returnCountMap.open + response.data.returnCountMap.closed + response.data.returnCountMap.failed
@@ -748,6 +757,10 @@ async function getLoopReturnStatusList(statusId: string, reset = true ,pageSize 
     const params: any = { pageIndex: pageIndex.value, pageSize };
     if (statusId && statusId !== "ALL") {
       params.statusId = statusId;
+    }
+     // include selected NetSuite account if chosen
+    if (selectedNSAccount.value) {
+      params.systemMessageRemoteId = selectedNSAccount.value;
     }
 
     const response = await UserService.getLoopReturnStatusList(params);
@@ -791,6 +804,13 @@ const confirmDelete = async (onConfirm: any, message?: string) => {
       ]
     });
     await alert.present();
+}
+
+const changeAccountType = async () => {
+  emitter.emit("presentLoader", { message: "Loading...", backdropDismiss: false });
+  await getLoopReturnStatusCount(selectedNSAccount.value);
+  await getLoopReturnStatusList("ALL");
+  emitter.emit("dismissLoader");
 }
 
 </script>

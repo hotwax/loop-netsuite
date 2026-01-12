@@ -21,7 +21,7 @@
     </ion-item>
     <ion-item lines="full">
       <ion-label>
-        {{ translate("Import PEM File") }}
+        {{ translate("Private Key") }}
       </ion-label>
       <ion-label class="ion-text-right ion-padding-end">
         {{ uploadedFileName }}

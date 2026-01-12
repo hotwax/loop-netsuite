@@ -232,15 +232,17 @@ const updatePassword = async (payload: any): Promise<any> => {
   });
 }
 
-const getLoopReturnStatusCount = async (): Promise<any> => {
+const getLoopReturnStatusCount = async (systemMessageRemoteId:string): Promise<any> => {
   return api({
     url: "/netsuite-loop-connector/return/returnCount",
     method: "get",
+    params: { systemMessageRemoteId }
   });
 }
 
 const getLoopReturnStatusList = async (params: {
   status?: string;
+  systemMessageRemoteId?: string;
   pageIndex?: number;
   pageSize?: number;
 }): Promise<any> => {
