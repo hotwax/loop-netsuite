@@ -11,13 +11,13 @@
   </ion-header>
   <ion-content>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="translate('NetSuite Account ID')" v-model="netSuiteDetails.remoteId" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('Account Id')" v-model="netSuiteDetails.remoteId" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="translate('NetSuite Consumer Key')" v-model="netSuiteDetails.sharedSecret" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('Consumer Key')" v-model="netSuiteDetails.sharedSecret" type="text" required />
     </ion-item>
     <ion-item lines="full">
-      <ion-input  label-placement="floating" :label="translate('NetSuite Certificate ID')" v-model="netSuiteDetails.sendSharedSecret" type="text" required />
+      <ion-input  label-placement="floating" :label="translate('Certificate Id')" v-model="netSuiteDetails.sendSharedSecret" type="text" required />
     </ion-item>
     <ion-item lines="full">
       <ion-label>
